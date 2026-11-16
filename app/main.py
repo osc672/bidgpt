@@ -100,11 +100,18 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     def is_self_origin(request: Request, origin: str | None) -> bool:
         """Allow the API's own origin so the bundled demo works same-origin."""
         if not origin:
-            return False
+            return True
         cleaned = origin.rstrip("/")
         candidates = {str(request.base_url).rstrip("/")}
         if settings.public_base_url:
             candidates.add(settings.public_base_url.rstrip("/"))
+        host = request.headers.get("x-forwarded-host") or request.headers.get("host")
+        if host:
+            candidates.add(f"http://{host}".rstrip("/"))
+            candidates.add(f"https://{host}".rstrip("/"))
+        # On Vercel / serverless deployments, automatically allow vercel.app and localhost
+        if ".vercel.app" in cleaned or "localhost" in cleaned or "127.0.0.1" in cleaned:
+            return True
         return cleaned in candidates
 
     def origin_known(origin: str | None, request: Request) -> bool:
@@ -126,14 +133,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             or request.headers.get("x-invoke-path")
             or request.headers.get("x-forwarded-uri")
         )
-        if matched:
-            request.scope["path"] = matched.split("?")[0]
-        else:
-            path = request.scope.get("path", "")
-            if path in ("/api/index.py", "/api/index", "/api", "/api/"):
-                request.scope["path"] = "/"
-            elif path.startswith("/api/") and path not in ("/api/sites",):
-                request.scope["path"] = path[4:]
+        path = matched.split("?")[0] if matched else request.scope.get("path", "")
+        if path in ("/api/index.py", "/api/index", "/api", "/api/"):
+            path = "/"
+        elif path.startswith("/api/") and path not in ("/api/sites", "/api/chat"):
+            path = path[4:]
+        request.scope["path"] = path
         return await call_next(request)
 
     @app.middleware("http")
@@ -372,6 +377,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             outcome = await chat_service.answer(body.site_key, body.message, history)
         except KeyError as exc:
             raise HTTPException(status_code=404, detail="Unknown site key") from exc
+        except Exception as exc:
+            log.exception("Chat failed: %s", exc)
+            return JSONResponse(
+                status_code=500,
+                content={"detail": f"Chat engine error: {exc}", "error": str(exc)},
+            )
         return outcome.public()
 
     @app.post("/")
@@ -387,10 +398,16 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             raise HTTPException(status_code=400, detail="Invalid JSON body") from exc
 
         if "message" in body or "site_key" in body:
-            chat_body = ChatRequest(**body)
+            try:
+                chat_body = ChatRequest(**body)
+            except Exception as exc:
+                raise HTTPException(status_code=422, detail=f"Invalid chat format: {exc}") from exc
             return await chat(chat_body, request)
         elif "url" in body:
-            site_body = SiteCreate(**body)
+            try:
+                site_body = SiteCreate(**body)
+            except Exception as exc:
+                raise HTTPException(status_code=422, detail=f"Invalid site format: {exc}") from exc
             return await register_site(site_body, request)
         raise HTTPException(status_code=422, detail="Unrecognized POST payload")
 
