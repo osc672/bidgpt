@@ -1048,7 +1048,12 @@
             headers: { "Content-Type": "application/json" },
             body: payload
           }).then(function (res) {
-            if (!res.ok) throw new Error("HTTP error " + res.status);
+            if (!res.ok) {
+              return res.json().catch(function () { return {}; }).then(function (errData) {
+                var msg = (errData && (errData.detail || errData.error)) || ("HTTP error " + res.status);
+                throw new Error(msg);
+              });
+            }
             return res.json();
           });
         }

@@ -186,6 +186,27 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @app.get("/api/index.py")
     @app.get("/api/index")
     async def root(request: Request):
+        if request.query_params.get("debug") == "1":
+            var_task = Path("/var/task")
+            data_dir = settings.data_dir
+            site = registry.get("sk_9ee55314081ef05c9043")
+            index = index_manager.get("sk_9ee55314081ef05c9043") if site else None
+            return {
+                "cwd": str(Path.cwd()),
+                "data_dir": str(data_dir),
+                "data_dir_exists": data_dir.exists(),
+                "registry_exists": (data_dir / "registry.sqlite").exists(),
+                "site_found": site is not None,
+                "site_status": site.status if site else None,
+                "site_active_index": site.active_index if site else None,
+                "index_found": index is not None,
+                "index_page_count": len(index.pages) if index else 0,
+                "var_task_exists": var_task.exists(),
+                "var_task_entries": [p.name for p in var_task.iterdir()] if var_task.exists() else [],
+                "tmp_data_exists": Path("/tmp/data").exists(),
+                "tmp_data_entries": [p.name for p in Path("/tmp/data").iterdir()] if Path("/tmp/data").exists() else [],
+            }
+
         matched = (
             request.headers.get("x-matched-path")
             or request.headers.get("x-invoke-path")
@@ -347,43 +368,44 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @app.post("/chat")
     @app.post("/api/chat")
     async def chat(body: ChatRequest, request: Request):
-        site = registry.get(body.site_key)
-        if site is None:
-            raise HTTPException(status_code=404, detail="Unknown site key")
-        enforce_site_origin(request, site.domain)
-
-        ip = _client_ip(request, settings)
-        allowed_ip, retry_ip = limiter.allow(
-            f"ip:{ip}", settings.chat_rate_limit_per_ip
-        )
-        if not allowed_ip:
-            return JSONResponse(
-                status_code=429,
-                headers={"Retry-After": str(retry_ip)},
-                content={"detail": "Too many chat requests. Please slow down."},
-            )
-        allowed_site, retry_site = limiter.allow(
-            f"site:{body.site_key}", settings.chat_rate_limit_per_site
-        )
-        if not allowed_site:
-            return JSONResponse(
-                status_code=429,
-                headers={"Retry-After": str(retry_site)},
-                content={"detail": "Too many chat requests for this site. Please slow down."},
-            )
-
-        history = [item.model_dump() for item in body.history]
         try:
+            site = registry.get(body.site_key)
+            if site is None:
+                return JSONResponse(status_code=404, content={"detail": "Unknown site key"})
+            enforce_site_origin(request, site.domain)
+
+            ip = _client_ip(request, settings)
+            allowed_ip, retry_ip = limiter.allow(
+                f"ip:{ip}", settings.chat_rate_limit_per_ip
+            )
+            if not allowed_ip:
+                return JSONResponse(
+                    status_code=429,
+                    headers={"Retry-After": str(retry_ip)},
+                    content={"detail": "Too many chat requests. Please slow down."},
+                )
+            allowed_site, retry_site = limiter.allow(
+                f"site:{body.site_key}", settings.chat_rate_limit_per_site
+            )
+            if not allowed_site:
+                return JSONResponse(
+                    status_code=429,
+                    headers={"Retry-After": str(retry_site)},
+                    content={"detail": "Too many chat requests for this site. Please slow down."},
+                )
+
+            history = [item.model_dump() for item in body.history]
             outcome = await chat_service.answer(body.site_key, body.message, history)
-        except KeyError as exc:
-            raise HTTPException(status_code=404, detail="Unknown site key") from exc
+            return JSONResponse(content=outcome.public())
+        except HTTPException as exc:
+            return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
         except Exception as exc:
+            import traceback
             log.exception("Chat failed: %s", exc)
             return JSONResponse(
                 status_code=500,
-                content={"detail": f"Chat engine error: {exc}", "error": str(exc)},
+                content={"detail": f"Chat engine error: {exc}", "traceback": traceback.format_exc()},
             )
-        return outcome.public()
 
     @app.post("/")
     @app.post("/api")
@@ -395,21 +417,33 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         try:
             body = await request.json()
         except Exception as exc:
-            raise HTTPException(status_code=400, detail="Invalid JSON body") from exc
+            return JSONResponse(status_code=400, content={"detail": f"Invalid JSON body: {exc}"})
 
         if "message" in body or "site_key" in body:
             try:
                 chat_body = ChatRequest(**body)
             except Exception as exc:
-                raise HTTPException(status_code=422, detail=f"Invalid chat format: {exc}") from exc
-            return await chat(chat_body, request)
+                return JSONResponse(status_code=422, content={"detail": f"Invalid chat format: {exc}"})
+            try:
+                return await chat(chat_body, request)
+            except HTTPException as exc:
+                return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+            except Exception as exc:
+                import traceback
+                return JSONResponse(status_code=500, content={"detail": str(exc), "traceback": traceback.format_exc()})
         elif "url" in body:
             try:
                 site_body = SiteCreate(**body)
             except Exception as exc:
-                raise HTTPException(status_code=422, detail=f"Invalid site format: {exc}") from exc
-            return await register_site(site_body, request)
-        raise HTTPException(status_code=422, detail="Unrecognized POST payload")
+                return JSONResponse(status_code=422, content={"detail": f"Invalid site format: {exc}"})
+            try:
+                return await register_site(site_body, request)
+            except HTTPException as exc:
+                return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+            except Exception as exc:
+                import traceback
+                return JSONResponse(status_code=500, content={"detail": str(exc), "traceback": traceback.format_exc()})
+        return JSONResponse(status_code=422, content={"detail": "Unrecognized POST payload"})
 
     @app.get("/tools/claude")
     async def tools_claude() -> dict[str, object]:
