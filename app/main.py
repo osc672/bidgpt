@@ -181,6 +181,17 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @app.get("/api/index.py")
     @app.get("/api/index")
     async def root(request: Request):
+        matched = (
+            request.headers.get("x-matched-path")
+            or request.headers.get("x-invoke-path")
+            or request.headers.get("x-forwarded-uri")
+            or request.headers.get("x-vercel-matched-path")
+            or request.url.path
+            or ""
+        )
+        if "search" in matched or "site" in request.query_params or request.url.path.startswith("/search"):
+            return await search_page()
+
         accept = request.headers.get("accept", "")
         if "application/json" in accept and "text/html" not in accept:
             return {
