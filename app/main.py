@@ -121,11 +121,19 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @app.middleware("http")
     async def vercel_path_rewrite(request: Request, call_next):
-        path = request.scope.get("path", "")
-        if path in ("/api/index.py", "/api/index", "/api", "/api/"):
-            request.scope["path"] = "/"
-        elif path.startswith("/api/") and path not in ("/api/sites",):
-            request.scope["path"] = path[4:]
+        matched = (
+            request.headers.get("x-matched-path")
+            or request.headers.get("x-invoke-path")
+            or request.headers.get("x-forwarded-uri")
+        )
+        if matched:
+            request.scope["path"] = matched.split("?")[0]
+        else:
+            path = request.scope.get("path", "")
+            if path in ("/api/index.py", "/api/index", "/api", "/api/"):
+                request.scope["path"] = "/"
+            elif path.startswith("/api/") and path not in ("/api/sites",):
+                request.scope["path"] = path[4:]
         return await call_next(request)
 
     @app.middleware("http")
@@ -244,6 +252,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         }
 
     @app.post("/sites", status_code=201)
+    @app.post("/api/sites", status_code=201)
     async def register_site(body: SiteCreate, request: Request):
         require_admin(request)
         try:
@@ -290,6 +299,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         }
 
     @app.get("/sites/{site_key}/status")
+    @app.get("/api/sites/{site_key}/status")
     async def site_status(site_key: str, request: Request) -> dict[str, object]:
         site = registry.get(site_key)
         if site is None:
@@ -300,6 +310,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return payload
 
     @app.post("/sites/{site_key}/recrawl", status_code=202)
+    @app.post("/api/sites/{site_key}/recrawl", status_code=202)
     async def recrawl(site_key: str, request: Request):
         require_admin(request)
         site = registry.get(site_key)
