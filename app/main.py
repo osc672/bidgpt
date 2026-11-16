@@ -186,27 +186,6 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @app.get("/api/index.py")
     @app.get("/api/index")
     async def root(request: Request):
-        if request.query_params.get("debug") == "1":
-            try:
-                data_dir = settings.data_dir
-                site = registry.get("sk_9ee55314081ef05c9043")
-                index = index_manager.get("sk_9ee55314081ef05c9043") if site else None
-                return {
-                    "cwd": str(Path.cwd()),
-                    "data_dir": str(data_dir),
-                    "data_dir_exists": data_dir.exists(),
-                    "registry_exists": (data_dir / "registry.sqlite").exists(),
-                    "site_found": site is not None,
-                    "site_status": site.status if site else None,
-                    "site_active_index": site.active_index if site else None,
-                    "index_found": index is not None,
-                    "index_page_count": len(index.pages) if index else 0,
-                    "tmp_data_exists": Path("/tmp/data").exists(),
-                }
-            except Exception as exc:
-                import traceback
-                return {"debug_error": str(exc), "traceback": traceback.format_exc()}
-
         matched = (
             request.headers.get("x-matched-path")
             or request.headers.get("x-invoke-path")
