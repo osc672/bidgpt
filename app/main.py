@@ -120,6 +120,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         )
 
     @app.middleware("http")
+    async def vercel_path_rewrite(request: Request, call_next):
+        path = request.scope.get("path", "")
+        if path in ("/api/index.py", "/api/index", "/api", "/api/"):
+            request.scope["path"] = "/"
+        elif path.startswith("/api/") and path not in ("/api/sites",):
+            request.scope["path"] = path[4:]
+        return await call_next(request)
+
+    @app.middleware("http")
     async def cors_middleware(request: Request, call_next):
         origin = request.headers.get("origin")
         known = origin_known(origin, request)
@@ -159,6 +168,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @app.get("/")
     @app.get("/index.html")
+    @app.get("/api")
+    @app.get("/api/")
+    @app.get("/api/index.py")
+    @app.get("/api/index")
     async def root(request: Request):
         accept = request.headers.get("accept", "")
         if "application/json" in accept and "text/html" not in accept:
@@ -184,6 +197,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @app.get("/search")
     @app.get("/search.html")
+    @app.get("/api/search")
+    @app.get("/api/search.html")
     async def search_page():
         path = STATIC_DIR / "search.html"
         if not path.exists():
@@ -303,6 +318,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return {"site_key": site_key, "status": "queued"}
 
     @app.post("/chat")
+    @app.post("/api/chat")
     async def chat(body: ChatRequest, request: Request):
         site = registry.get(body.site_key)
         if site is None:
@@ -345,6 +361,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return {"tools": [openai_tool()]}
 
     @app.get("/widget.js")
+    @app.get("/api/widget.js")
     async def widget_js():
         path = STATIC_DIR / "widget.js"
         if not path.exists():
