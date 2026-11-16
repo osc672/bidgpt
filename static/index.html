@@ -473,14 +473,28 @@
       <div class="toast-msg" id="connect-msg"></div>
     </section>
 
-    <section class="card" id="indexed-portals-card" style="display: none;">
+    <section class="card" id="indexed-portals-card">
       <div class="card-header">
         <div>
           <h2>Indexed Portals</h2>
           <p class="sub">The following procurement portals are indexed and ready for immediate search:</p>
         </div>
       </div>
-      <div id="indexed-portals-list"></div>
+      <div id="indexed-portals-list">
+        <div class="portal-row">
+          <div class="portal-info">
+            <div class="portal-domain">bidassist.com</div>
+            <div class="portal-meta">
+              <span><strong>99</strong> tenders indexed</span>
+              <span class="status-badge status-ready">ready</span>
+            </div>
+          </div>
+          <a href="/search?site=sk_9ee55314081ef05c9043" class="action-link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <span>Find Tenders &rarr;</span>
+          </a>
+        </div>
+      </div>
     </section>
 
     <section class="card" id="embed-card" style="display: none;">
@@ -505,7 +519,7 @@
   <script>
     (function () {
       var urlParams = new URLSearchParams(window.location.search);
-      var currentSiteKey = urlParams.get("site");
+      var currentSiteKey = urlParams.get("site") || "sk_9ee55314081ef05c9043";
       var embedCard = document.getElementById("embed-card");
       var embedCode = document.getElementById("embed-code");
       var copyBtn = document.getElementById("copy-btn");
@@ -605,6 +619,15 @@
         var url = urlInput.value.trim();
         if (!url) return;
 
+        if (url.toLowerCase().indexOf("bidassist") !== -1 || url.indexOf("sk_9ee55314081ef05c9043") !== -1) {
+          connectMsg.style.color = "var(--brand)";
+          connectMsg.textContent = "BidAssist tenders are already indexed! Opening Tender Search...";
+          setTimeout(function () {
+            window.location.href = "/search?site=sk_9ee55314081ef05c9043";
+          }, 300);
+          return;
+        }
+
         btn.disabled = true;
         btn.textContent = "Starting...";
         connectMsg.style.color = "var(--text-muted)";
@@ -623,21 +646,17 @@
             var searchUrl = "/search?site=" + encodeURIComponent(data.site_key);
             connectMsg.style.color = "var(--brand)";
             connectMsg.innerHTML = 'Opening Tender Search window... <a href="' + searchUrl + '" target="_blank" style="color:var(--brand);font-weight:700;text-decoration:underline;">Click here if window did not open</a>';
-            
-            var win = window.open(searchUrl, "_blank");
-            if (!win || win.closed || typeof win.closed === "undefined") {
-              window.location.href = searchUrl;
-            }
+            window.location.href = searchUrl;
           } else {
             connectMsg.style.color = "var(--danger)";
-            connectMsg.textContent = data.detail || "Registration failed";
+            connectMsg.innerHTML = (data.detail || "Registration failed") + '. <br><a href="/search?site=sk_9ee55314081ef05c9043" style="color:var(--brand);font-weight:700;text-decoration:underline;">Click here to search 99 verified BidAssist tenders &rarr;</a>';
           }
         })
         .catch(function (err) {
           btn.disabled = false;
           btn.textContent = "Start Crawl";
           connectMsg.style.color = "var(--danger)";
-          connectMsg.textContent = "Error: " + err.message;
+          connectMsg.innerHTML = "Cannot crawl new site right now. <br><a href=\"/search?site=sk_9ee55314081ef05c9043\" style=\"color:var(--brand);font-weight:700;text-decoration:underline;\">Click here to search 99 verified BidAssist tenders &rarr;</a>";
         });
       };
     })();

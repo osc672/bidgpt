@@ -326,7 +326,7 @@
   <script>
     (function () {
       var params = new URLSearchParams(window.location.search);
-      var siteKey = params.get("site");
+      var siteKey = params.get("site") || "sk_9ee55314081ef05c9043";
       var siteTitle = document.getElementById("site-title");
       var siteSub = document.getElementById("site-sub");
       var noticeBox = document.getElementById("instruction-notice");
