@@ -925,10 +925,14 @@ class SearchIndex:
     def load(cls, path: Path) -> "SearchIndex":
         resolved = Path(path).resolve()
         try:
-            uri = f"{resolved.as_uri()}?mode=ro"
+            uri = f"{resolved.as_uri()}?mode=ro&immutable=1"
             conn = sqlite3.connect(uri, uri=True, check_same_thread=False)
         except Exception:
-            conn = sqlite3.connect(str(resolved), check_same_thread=False)
+            try:
+                uri = f"{resolved.as_uri()}?mode=ro"
+                conn = sqlite3.connect(uri, uri=True, check_same_thread=False)
+            except Exception:
+                conn = sqlite3.connect(str(resolved), check_same_thread=False)
         conn.row_factory = sqlite3.Row
         try:
             rows = conn.execute("SELECT * FROM pages ORDER BY id").fetchall()

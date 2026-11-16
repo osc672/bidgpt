@@ -8,6 +8,7 @@ content lives only in the per-site index files.
 from __future__ import annotations
 
 import json
+import os
 import secrets
 import sqlite3
 import threading
@@ -105,6 +106,16 @@ class Registry:
         except OSError:
             pass
         self._lock = threading.RLock()
+        is_serverless = bool(os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"))
+        if is_serverless:
+            resolved = Path(self.path).resolve()
+            try:
+                uri = f"{resolved.as_uri()}?mode=ro&immutable=1"
+                self._conn = sqlite3.connect(uri, uri=True, check_same_thread=False)
+                self._conn.row_factory = sqlite3.Row
+                return
+            except Exception:
+                pass
         try:
             self._conn = sqlite3.connect(str(self.path), check_same_thread=False)
             self._conn.row_factory = sqlite3.Row
@@ -136,7 +147,7 @@ class Registry:
             # Filesystem is read-only (e.g. Vercel / serverless); connect with read-only URI
             resolved = Path(self.path).resolve()
             try:
-                uri = f"{resolved.as_uri()}?mode=ro"
+                uri = f"{resolved.as_uri()}?mode=ro&immutable=1"
                 self._conn = sqlite3.connect(uri, uri=True, check_same_thread=False)
             except Exception:
                 self._conn = sqlite3.connect(str(resolved), check_same_thread=False)
