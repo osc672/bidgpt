@@ -134,8 +134,12 @@ class Registry:
                 self._conn.commit()
         except sqlite3.OperationalError:
             # Filesystem is read-only (e.g. Vercel / serverless); connect with read-only URI
-            uri = f"file:{self.path.as_posix()}?mode=ro"
-            self._conn = sqlite3.connect(uri, uri=True, check_same_thread=False)
+            resolved = Path(self.path).resolve()
+            try:
+                uri = f"{resolved.as_uri()}?mode=ro"
+                self._conn = sqlite3.connect(uri, uri=True, check_same_thread=False)
+            except Exception:
+                self._conn = sqlite3.connect(str(resolved), check_same_thread=False)
             self._conn.row_factory = sqlite3.Row
 
     def close(self) -> None:

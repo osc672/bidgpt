@@ -39,8 +39,18 @@ if is_serverless:
     if repo_data is not None:
         try:
             tmp_data.mkdir(parents=True, exist_ok=True)
-            if not (tmp_data / "registry.sqlite").exists() or not (tmp_data / "sites").exists():
-                shutil.copytree(repo_data, tmp_data, dirs_exist_ok=True)
+            shutil.copytree(repo_data, tmp_data, dirs_exist_ok=True)
+            for root, dirs, files in os.walk(tmp_data):
+                for d in dirs:
+                    try:
+                        os.chmod(os.path.join(root, d), 0o777)
+                    except Exception:
+                        pass
+                for f in files:
+                    try:
+                        os.chmod(os.path.join(root, f), 0o666)
+                    except Exception:
+                        pass
         except Exception:
             pass
 
