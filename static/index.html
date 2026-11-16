@@ -1250,41 +1250,50 @@
         resultsCountEl.innerHTML = '<span class="spinner"></span> <span>Searching tenders...</span>';
         tendersListEl.innerHTML = '<div class="empty-state"><div class="spinner"></div><p style="margin-top:10px;">Finding tenders matching "' + escapeHtml(query || "all tenders") + '"...</p></div>';
 
-        fetch("/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            site_key: currentSiteKey,
-            message: query || "all tenders"
-          })
-        })
-        .then(function (res) {
-          if (!res.ok) throw new Error("HTTP error " + res.status);
-          return res.json();
-        })
-        .then(function (data) {
-          portalSearchBtn.disabled = false;
-          portalBtnText.textContent = "Find Tenders";
-
-          var rawTenders = Array.isArray(data.tenders) ? data.tenders : [];
-          allTenders = rawTenders.map(normalizeTender);
-          selectedCat = "ALL";
-          selectedLoc = "ALL";
-          currentPage = 1;
-
-          rebuildChips();
-          applyFilters();
-        })
-        .catch(function (err) {
-          portalSearchBtn.disabled = false;
-          portalBtnText.textContent = "Find Tenders";
-          resultsCountEl.textContent = "Search error";
-          tendersListEl.innerHTML =
-            '<div class="empty-state" style="border-color:#fca5a5;color:#b91c1c;">' +
-            '<p>Could not load tenders: ' + escapeHtml(err.message) + '</p>' +
-            '<button type="button" class="reset-filter-btn" onclick="location.reload();">Retry</button>' +
-            '</div>';
+        var payload = JSON.stringify({
+          site_key: currentSiteKey,
+          message: query || "all tenders"
         });
+
+        function tryFetch(endpoint) {
+          return fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: payload
+          }).then(function (res) {
+            if (!res.ok) throw new Error("HTTP error " + res.status);
+            return res.json();
+          });
+        }
+
+        tryFetch("/api/chat")
+          .catch(function () { return tryFetch("/chat"); })
+          .catch(function () { return tryFetch("/"); })
+          .then(function (data) {
+            portalSearchBtn.disabled = false;
+            portalBtnText.textContent = "Find Tenders";
+
+            var rawTenders = Array.isArray(data.tenders) ? data.tenders : [];
+            allTenders = rawTenders.map(normalizeTender);
+            selectedCat = "ALL";
+            selectedLoc = "ALL";
+            currentPage = 1;
+
+            rebuildChips();
+            applyFilters();
+          })
+          .catch(function (err) {
+            portalSearchBtn.disabled = false;
+            portalBtnText.textContent = "Find Tenders";
+            resultsCountEl.textContent = "Search error";
+            tendersListEl.innerHTML =
+              '<div class="empty-state" style="border-color:#fca5a5;color:#b91c1c;">' +
+              '<p>Could not load tenders: ' + escapeHtml(err.message) + '</p>' +
+              '<button type="button" class="reset-filter-btn" id="retry-fetch-btn">Retry</button>' +
+              '</div>';
+            var retryBtn = document.getElementById("retry-fetch-btn");
+            if (retryBtn) retryBtn.onclick = function () { fetchTenders(query || "all tenders"); };
+          });
       }
 
       // Handle search submission

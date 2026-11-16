@@ -785,19 +785,26 @@
   }
 
   function fetchStatus() {
-    return fetch(apiBase + "/sites/" + encodeURIComponent(siteKey) + "/status", {
-      method: "GET",
-      mode: "cors",
-      credentials: "omit",
-      headers: { Accept: "application/json" }
-    }).then(function (response) {
-      if (!response.ok) {
-        return parseError(response).then(function (message) {
-          throw new Error(message);
-        });
-      }
-      return response.json();
-    });
+    function tryStatus(endpoint) {
+      return fetch(endpoint, {
+        method: "GET",
+        mode: "cors",
+        credentials: "omit",
+        headers: { Accept: "application/json" }
+      }).then(function (response) {
+        if (!response.ok) {
+          return parseError(response).then(function (message) {
+            throw new Error(message);
+          });
+        }
+        return response.json();
+      });
+    }
+
+    return tryStatus(apiBase + "/api/sites/" + encodeURIComponent(siteKey) + "/status")
+      .catch(function () {
+        return tryStatus(apiBase + "/sites/" + encodeURIComponent(siteKey) + "/status");
+      });
   }
 
   function applyStatus(data) {
@@ -910,25 +917,32 @@
     state.history.push({ role: "user", content: message });
     setStatus("Searching indexed pages…", "loading");
 
-    fetch(apiBase + "/chat", {
-      method: "POST",
-      mode: "cors",
-      credentials: "omit",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({
-        site_key: siteKey,
-        message: message,
-        history: state.history.slice(-10)
-      })
-    })
-      .then(function (response) {
+    var chatPayload = JSON.stringify({
+      site_key: siteKey,
+      message: message,
+      history: state.history.slice(-10)
+    });
+
+    function trySendChat(endpoint) {
+      return fetch(endpoint, {
+        method: "POST",
+        mode: "cors",
+        credentials: "omit",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: chatPayload
+      }).then(function (response) {
         if (!response.ok) {
           return parseError(response).then(function (detail) {
             throw new Error(detail);
           });
         }
         return response.json();
-      })
+      });
+    }
+
+    trySendChat(apiBase + "/api/chat")
+      .catch(function () { return trySendChat(apiBase + "/chat"); })
+      .catch(function () { return trySendChat(apiBase + "/"); })
       .then(function (data) {
         renderResponse(data);
         applyStatus({

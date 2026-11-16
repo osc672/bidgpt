@@ -374,6 +374,26 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             raise HTTPException(status_code=404, detail="Unknown site key") from exc
         return outcome.public()
 
+    @app.post("/")
+    @app.post("/api")
+    @app.post("/api/")
+    @app.post("/api/index.py")
+    @app.post("/api/index")
+    async def post_root(request: Request):
+        """Handle rewritten POST requests on Vercel serverless."""
+        try:
+            body = await request.json()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail="Invalid JSON body") from exc
+
+        if "message" in body or "site_key" in body:
+            chat_body = ChatRequest(**body)
+            return await chat(chat_body, request)
+        elif "url" in body:
+            site_body = SiteCreate(**body)
+            return await register_site(site_body, request)
+        raise HTTPException(status_code=422, detail="Unrecognized POST payload")
+
     @app.get("/tools/claude")
     async def tools_claude() -> dict[str, object]:
         return {"tools": [claude_tool()]}
