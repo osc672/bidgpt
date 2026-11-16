@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -59,15 +60,27 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
-        settings.data_dir.mkdir(parents=True, exist_ok=True)
-        settings.sites_dir.mkdir(parents=True, exist_ok=True)
-        registry.recover_interrupted()
-        scheduler.start()
+        try:
+            settings.data_dir.mkdir(parents=True, exist_ok=True)
+            settings.sites_dir.mkdir(parents=True, exist_ok=True)
+        except OSError:
+            pass
+        try:
+            registry.recover_interrupted()
+        except Exception as e:
+            log.warning("Could not recover interrupted crawls: %s", e)
+        is_serverless = bool(os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"))
+        if not is_serverless:
+            scheduler.start()
         try:
             yield
         finally:
-            await scheduler.stop()
-            await crawl_manager.stop()
+            if not is_serverless:
+                try:
+                    await scheduler.stop()
+                    await crawl_manager.stop()
+                except Exception:
+                    pass
             index_manager.close()
             registry.close()
 

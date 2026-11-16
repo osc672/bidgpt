@@ -100,34 +100,43 @@ class Registry:
 
     def __init__(self, path: Path):
         self.path = Path(path)
-        self.path.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+        except OSError:
+            pass
         self._lock = threading.RLock()
-        self._conn = sqlite3.connect(str(self.path), check_same_thread=False)
-        self._conn.row_factory = sqlite3.Row
-        with self._lock:
-            self._conn.execute("PRAGMA journal_mode=WAL")
-            self._conn.execute("PRAGMA synchronous=NORMAL")
-            self._conn.execute(
-                """
-                CREATE TABLE IF NOT EXISTS sites (
-                    site_key TEXT PRIMARY KEY,
-                    url TEXT NOT NULL UNIQUE,
-                    domain TEXT NOT NULL,
-                    status TEXT NOT NULL,
-                    pages_found INTEGER NOT NULL DEFAULT 0,
-                    pages_indexed INTEGER NOT NULL DEFAULT 0,
-                    crawl_started_at TEXT,
-                    last_crawled_at TEXT,
-                    next_crawl_at TEXT,
-                    active_index TEXT,
-                    last_error TEXT,
-                    errors_json TEXT NOT NULL DEFAULT '[]',
-                    created_at TEXT NOT NULL,
-                    updated_at TEXT NOT NULL
+        try:
+            self._conn = sqlite3.connect(str(self.path), check_same_thread=False)
+            self._conn.row_factory = sqlite3.Row
+            with self._lock:
+                self._conn.execute("PRAGMA journal_mode=WAL")
+                self._conn.execute("PRAGMA synchronous=NORMAL")
+                self._conn.execute(
+                    """
+                    CREATE TABLE IF NOT EXISTS sites (
+                        site_key TEXT PRIMARY KEY,
+                        url TEXT NOT NULL UNIQUE,
+                        domain TEXT NOT NULL,
+                        status TEXT NOT NULL,
+                        pages_found INTEGER NOT NULL DEFAULT 0,
+                        pages_indexed INTEGER NOT NULL DEFAULT 0,
+                        crawl_started_at TEXT,
+                        last_crawled_at TEXT,
+                        next_crawl_at TEXT,
+                        active_index TEXT,
+                        last_error TEXT,
+                        errors_json TEXT NOT NULL DEFAULT '[]',
+                        created_at TEXT NOT NULL,
+                        updated_at TEXT NOT NULL
+                    )
+                    """
                 )
-                """
-            )
-            self._conn.commit()
+                self._conn.commit()
+        except sqlite3.OperationalError:
+            # Filesystem is read-only (e.g. Vercel / serverless); connect with read-only URI
+            uri = f"file:{self.path.as_posix()}?mode=ro"
+            self._conn = sqlite3.connect(uri, uri=True, check_same_thread=False)
+            self._conn.row_factory = sqlite3.Row
 
     def close(self) -> None:
         with self._lock:
@@ -275,15 +284,19 @@ class Registry:
         """Crawls do not survive a process restart; requeue them immediately."""
         now = iso(utcnow())
         with self._lock:
-            self._conn.execute(
-                """
-                UPDATE sites
-                SET status = 'failed',
-                    last_error = 'crawl interrupted by service restart',
-                    next_crawl_at = ?,
-                    updated_at = ?
-                WHERE status IN ('queued', 'crawling')
-                """,
-                (now, now),
-            )
-            self._conn.commit()
+            try:
+                self._conn.execute(
+                    """
+                    UPDATE sites
+                    SET status = 'failed',
+                        last_error = 'crawl interrupted by service restart',
+                        next_crawl_at = ?,
+                        updated_at = ?
+                    WHERE status IN ('queued', 'crawling')
+                    """,
+                    (now, now),
+                )
+                self._conn.commit()
+            except sqlite3.OperationalError:
+                # Read-only database on serverless
+                pass
