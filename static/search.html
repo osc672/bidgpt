@@ -25,7 +25,7 @@
       --success: #10b981;
       --shadow: 0 4px 24px -2px rgba(15, 23, 42, 0.08);
       --shadow-lg: 0 16px 48px -6px rgba(15, 23, 42, 0.12);
-      --radius: 20px;
+      --radius: 18px;
     }
     @media (prefers-color-scheme: dark) {
       :root {
@@ -112,21 +112,16 @@
     }
     main {
       flex: 1;
-      max-width: 800px;
-      margin: 48px auto;
-      padding: 0 24px;
+      max-width: 960px;
+      margin: 32px auto;
+      padding: 0 20px;
       width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
     }
     .search-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 48px 36px;
-      text-align: center;
+      padding: 32px 28px;
       box-shadow: var(--shadow-lg);
       width: 100%;
       position: relative;
@@ -141,97 +136,443 @@
       height: 4px;
       background: linear-gradient(90deg, #0f766e, #14b8a6, #0d9488);
     }
+    .search-hero {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
     .icon-wrapper {
-      width: 72px;
-      height: 72px;
-      border-radius: 20px;
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
       background: var(--brand-light);
       border: 1px solid var(--brand-border);
       display: inline-flex;
       align-items: center;
       justify-content: center;
       color: var(--brand);
-      margin-bottom: 24px;
-      box-shadow: 0 4px 16px rgba(15, 118, 110, 0.15);
+      flex-shrink: 0;
     }
     .icon-wrapper svg {
-      width: 34px;
-      height: 34px;
+      width: 26px;
+      height: 26px;
     }
     h1 {
-      font-size: clamp(26px, 4.5vw, 34px);
+      font-size: clamp(22px, 3.5vw, 28px);
       font-weight: 800;
       letter-spacing: -0.02em;
-      margin: 0 0 10px;
+      margin: 0;
     }
     .lead-text {
       color: var(--text-muted);
-      font-size: 16px;
-      margin: 0 0 32px;
-      max-width: 50ch;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .notice-box {
-      border-radius: 12px;
-      padding: 14px 20px;
       font-size: 14.5px;
-      font-weight: 600;
-      margin-bottom: 30px;
-      display: inline-flex;
+      margin: 2px 0 0;
+    }
+
+    /* Search Bar Form */
+    .search-form-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .search-input-wrap {
+      flex: 1;
+      min-width: 260px;
+      position: relative;
+      display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 10px;
-      transition: all 0.2s ease;
+    }
+    .search-input-wrap svg {
+      position: absolute;
+      left: 16px;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+    .search-input {
       width: 100%;
-      max-width: 480px;
+      padding: 14px 44px 14px 46px;
+      font-size: 15px;
+      font-family: inherit;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      outline: none;
+      transition: all 0.15s ease;
     }
-    .notice-ready {
-      background: #ecfdf5;
-      border: 1px solid #a7f3d0;
-      color: #047857;
+    .search-input:focus {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 20%, transparent);
+      background: var(--surface);
     }
-    .notice-crawling {
-      background: #eff6ff;
-      border: 1px solid #bfdbfe;
-      color: #1d4ed8;
+    .clear-btn {
+      position: absolute;
+      right: 14px;
+      background: none;
+      border: 0;
+      color: var(--text-muted);
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 4px;
+      display: none;
     }
-    .notice-error {
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      color: #b91c1c;
-    }
+    .clear-btn:hover { color: var(--text); }
     .find-tenders-btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 12px;
+      gap: 8px;
       background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
       color: #ffffff;
-      font-size: 16.5px;
+      font-size: 15px;
       font-weight: 700;
-      padding: 16px 42px;
+      padding: 14px 28px;
       border: 0;
-      border-radius: 14px;
+      border-radius: 12px;
       cursor: pointer;
-      box-shadow: 0 8px 28px rgba(15, 118, 110, 0.32);
+      box-shadow: 0 6px 20px rgba(15, 118, 110, 0.28);
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      white-space: nowrap;
     }
     .find-tenders-btn:hover:not(:disabled) {
       transform: translateY(-2px);
-      box-shadow: 0 12px 36px rgba(15, 118, 110, 0.42);
-    }
-    .find-tenders-btn:active:not(:disabled) {
-      transform: translateY(0);
+      box-shadow: 0 10px 28px rgba(15, 118, 110, 0.38);
     }
     .find-tenders-btn:disabled {
       opacity: 0.6;
       cursor: not-allowed;
-      box-shadow: none;
+      transform: none;
     }
-    .find-tenders-btn svg {
-      width: 20px;
-      height: 20px;
+    .find-tenders-btn svg { width: 18px; height: 18px; }
+
+    /* Quick Queries */
+    .quick-queries-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+      font-size: 13px;
+    }
+    .quick-label {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .quick-chip {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 4px 12px;
+      color: var(--text);
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+    .quick-chip:hover {
+      border-color: var(--brand);
+      color: var(--brand);
+      background: var(--brand-light);
+    }
+
+    /* Dual Filters (Type & Location) */
+    .filters-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 24px;
+    }
+    .filter-row {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .filter-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .filter-label svg {
+      width: 13px;
+      height: 13px;
+      color: var(--brand);
+    }
+    .chips-scroll-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: thin;
+    }
+    .chips-scroll-wrap::-webkit-scrollbar {
+      height: 4px;
+    }
+    .chips-scroll-wrap::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+    .filter-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+      font-family: inherit;
+      flex-shrink: 0;
+    }
+    .filter-chip:hover {
+      border-color: var(--brand);
+      color: var(--text);
+    }
+    .filter-chip.active {
+      background: var(--brand);
+      border-color: var(--brand);
+      color: var(--brand-ink);
+      box-shadow: 0 2px 8px rgba(15, 118, 110, 0.25);
+    }
+
+    /* Results Header */
+    .results-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      margin-bottom: 16px;
+      font-size: 13.5px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .results-count { font-weight: 600; color: var(--text); }
+    .pagination-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .page-btn {
+      padding: 5px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s ease;
+    }
+    .page-btn:hover:not(:disabled) {
+      border-color: var(--brand);
+      color: var(--brand);
+    }
+    .page-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    /* Tender Cards */
+    .tenders-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .tender-card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: all 0.2s ease;
+    }
+    .tender-card:hover {
+      border-color: color-mix(in srgb, var(--brand) 40%, var(--border));
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+    .tender-card-header {
+      background: #0f766e;
+      color: #ffffff;
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 600;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .tender-header-left, .tender-header-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .tender-header-right {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+    }
+    .tender-card-body {
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .tender-info {
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--text);
+      margin: 0;
+    }
+    .tender-info-label {
+      font-weight: 700;
+      color: var(--brand);
+    }
+    .tender-closing {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      background: #fef2f2;
+      color: #b91c1c;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+      width: fit-content;
+      border: 1px solid #fee2e2;
+    }
+    .tender-metrics-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+    }
+    .tender-metric-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .metric-lbl {
+      font-size: 10.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+    .metric-val-emd, .metric-val-ecv {
+      font-size: 14px;
+      font-weight: 700;
+      color: #7c3aed;
+    }
+    .metric-val-exemption {
+      font-size: 14px;
+      font-weight: 700;
+      color: #059669;
+    }
+    .tender-actions-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 12px;
+      border-top: 1px dashed var(--border);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .tender-share-icons {
+      display: flex;
+      gap: 6px;
+    }
+    .share-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      padding: 0;
+    }
+    .share-btn:hover {
+      color: #ffffff;
+      border-color: transparent;
+      transform: translateY(-1px);
+    }
+    .share-fb:hover { background: #1877f2; }
+    .share-tw:hover { background: #1da1f2; }
+    .share-in:hover { background: #0a66c2; }
+    .share-wa:hover { background: #25d366; }
+    .share-btn svg { width: 14px; height: 14px; fill: currentColor; }
+
+    .view-tender-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 20px;
+      background: #0f766e;
+      color: #ffffff;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.15s ease;
+      box-shadow: 0 4px 12px rgba(15, 118, 110, 0.25);
+    }
+    .view-tender-btn:hover {
+      background: #0d9488;
+      transform: translateY(-1px);
+    }
+
+    /* State messages */
+    .empty-state {
+      padding: 36px 20px;
+      text-align: center;
+      color: var(--text-muted);
+      background: var(--bg);
+      border: 1px dashed var(--border);
+      border-radius: 14px;
+      margin: 12px 0;
+    }
+    .empty-state p { margin: 0 0 14px; font-size: 14px; }
+    .reset-filter-btn {
+      padding: 8px 18px;
+      border-radius: 8px;
+      border: 1px solid var(--brand);
+      background: var(--brand);
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
     }
 
     .spinner {
@@ -245,12 +586,11 @@
       vertical-align: middle;
       flex-shrink: 0;
     }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
     .meta-footer {
-      margin-top: 36px;
-      padding-top: 24px;
+      margin-top: 24px;
+      padding-top: 20px;
       border-top: 1px solid var(--border);
       font-size: 13px;
       color: var(--text-muted);
@@ -260,10 +600,12 @@
       flex-wrap: wrap;
       gap: 12px;
     }
+
     @media (max-width: 600px) {
       header { padding: 14px 20px; }
-      .search-card { padding: 32px 20px; }
+      .search-card { padding: 24px 16px; }
       .find-tenders-btn { width: 100%; }
+      .tender-metrics-row { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -287,37 +629,101 @@
 
   <main>
     <div class="search-card">
-      <div class="icon-wrapper">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-      </div>
-
-      <h1 id="site-title">Tender Search Portal</h1>
-      <p class="lead-text" id="site-sub">Search active and verified procurement opportunities with instant results.</p>
-
-      <div>
-        <div class="notice-box notice-crawling" id="instruction-notice">
-          <span class="spinner"></span>
-          <span id="notice-text">Preparing tender index...</span>
-        </div>
-      </div>
-
-      <div>
-        <button id="find-tenders-btn" class="find-tenders-btn" type="button" disabled>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <div class="search-hero">
+        <div class="icon-wrapper">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
-          <span>Find Tenders</span>
-        </button>
+        </div>
+        <div>
+          <h1 id="site-title">BidAssist Tender Search</h1>
+          <p class="lead-text" id="site-sub">Click Find Tenders to search for tenders across verified procurement portals.</p>
+        </div>
       </div>
 
+      <!-- Search Input Form -->
+      <form id="search-form" onsubmit="event.preventDefault(); return false;">
+        <div class="search-form-row">
+          <div class="search-input-wrap">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input id="search-input" class="search-input" type="text" placeholder="Search tenders (e.g. Karnataka railway, Andhra Pradesh, Computer, Civil)..." autocomplete="off" />
+            <button id="clear-search-btn" class="clear-btn" type="button" title="Clear">&times;</button>
+          </div>
+          <button id="find-tenders-btn" class="find-tenders-btn" type="submit">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <span id="btn-text">Find Tenders</span>
+          </button>
+        </div>
+      </form>
 
+      <!-- Quick Queries -->
+      <div class="quick-queries-wrap">
+        <span class="quick-label">Popular Searches:</span>
+        <button type="button" class="quick-chip" data-q="all tenders">All Tenders</button>
+        <button type="button" class="quick-chip" data-q="Andhra Pradesh tenders">Andhra Pradesh (10)</button>
+        <button type="button" class="quick-chip" data-q="Karnataka railway tenders">Karnataka Railway (4)</button>
+        <button type="button" class="quick-chip" data-q="Computer tenders">Computer (9)</button>
+        <button type="button" class="quick-chip" data-q="Civil tenders">Civil Work (186)</button>
+      </div>
+
+      <!-- Filters (Category & Location) -->
+      <div id="filters-container" class="filters-container">
+        <!-- 1. Filter by Type -->
+        <div class="filter-row">
+          <div class="filter-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+            <span>1. Filter by Type</span>
+          </div>
+          <div class="chips-scroll-wrap" id="type-chips"></div>
+        </div>
+
+        <!-- 2. Filter by Location -->
+        <div class="filter-row">
+          <div class="filter-label">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            <span>2. Filter by Location</span>
+          </div>
+          <div class="chips-scroll-wrap" id="loc-chips"></div>
+        </div>
+      </div>
+
+      <!-- Results Header & Pagination -->
+      <div class="results-bar">
+        <div class="results-count" id="results-count">Loading tenders...</div>
+        <div class="pagination-bar" id="pagination-top" style="display:none;">
+          <button type="button" class="page-btn prev-btn">&larr; Prev</button>
+          <span class="page-info"></span>
+          <button type="button" class="page-btn next-btn">Next &rarr;</button>
+        </div>
+      </div>
+
+      <!-- Tenders List Grid -->
+      <div id="tenders-list" class="tenders-list">
+        <div class="empty-state">
+          <div class="spinner"></div>
+          <p style="margin-top: 10px;">Loading verified tenders...</p>
+        </div>
+      </div>
+
+      <!-- Bottom Pagination -->
+      <div class="results-bar" id="bottom-bar" style="display:none;">
+        <div></div>
+        <div class="pagination-bar" id="pagination-bottom">
+          <button type="button" class="page-btn prev-btn">&larr; Prev</button>
+          <span class="page-info"></span>
+          <button type="button" class="page-btn next-btn">Next &rarr;</button>
+        </div>
+      </div>
 
       <div class="meta-footer">
-        <span id="site-meta">Connecting...</span>
+        <span id="site-meta">Status: Ready • 99 tenders indexed</span>
         <span>Powered by BidGPT Engine</span>
       </div>
     </div>
@@ -327,51 +733,376 @@
     (function () {
       var params = new URLSearchParams(window.location.search);
       var siteKey = params.get("site") || "sk_9ee55314081ef05c9043";
-      var siteTitle = document.getElementById("site-title");
-      var siteSub = document.getElementById("site-sub");
-      var noticeBox = document.getElementById("instruction-notice");
-      var noticeText = document.getElementById("notice-text");
+      var initialQuery = params.get("q") || "";
+
+      var searchForm = document.getElementById("search-form");
+      var searchInput = document.getElementById("search-input");
+      var clearBtn = document.getElementById("clear-search-btn");
       var findBtn = document.getElementById("find-tenders-btn");
-      var siteMeta = document.getElementById("site-meta");
+      var btnText = document.getElementById("btn-text");
+      var typeChipsEl = document.getElementById("type-chips");
+      var locChipsEl = document.getElementById("loc-chips");
+      var resultsCountEl = document.getElementById("results-count");
+      var tendersListEl = document.getElementById("tenders-list");
+      var paginationTop = document.getElementById("pagination-top");
+      var paginationBottom = document.getElementById("pagination-bottom");
+      var bottomBar = document.getElementById("bottom-bar");
 
-      function openWidget(prefill) {
-        var panel = document.getElementById("bidgpt-panel");
-        var launcher = document.getElementById("bidgpt-launcher");
+      var allTenders = [];
+      var filteredTenders = [];
+      var selectedCat = "ALL";
+      var selectedLoc = "ALL";
+      var currentPage = 1;
+      var pageSize = 8;
 
-        if (panel && panel.getAttribute("data-open") === "true") {
-          var input = document.getElementById("bidgpt-input");
-          if (input) {
-            if (prefill) input.value = prefill;
-            input.focus();
-          }
-          return;
-        }
-
-        if (launcher) {
-          launcher.click();
-        } else if (panel) {
-          panel.setAttribute("data-open", "true");
-        } else {
-          setTimeout(function () { openWidget(prefill); }, 150);
-          return;
-        }
-
-        setTimeout(function () {
-          var input = document.getElementById("bidgpt-input");
-          if (input) {
-            if (prefill) input.value = prefill;
-            input.focus();
-          }
-        }, 100);
+      function escapeHtml(str) {
+        if (!str) return "";
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
       }
 
-      findBtn.onclick = function () {
-        openWidget();
+      function safeUrl(u) {
+        if (!u) return "";
+        var trimmed = String(u).trim();
+        if (/^https?:\/\//i.test(trimmed)) return trimmed;
+        return "";
+      }
+
+      function normalizeTender(t) {
+        var rawCat = (t.type && t.type !== "not listed on the page") ? String(t.type).trim() : "Other";
+        var cleanCat = rawCat.charAt(0).toUpperCase() + rawCat.slice(1);
+        t.__clean_cat = cleanCat;
+
+        var rawLoc = (t.state && t.state !== "not listed on the page") ? t.state : ((t.location && t.location !== "not listed on the page") ? t.location : "Pan India");
+        var cleanLoc = String(rawLoc).trim();
+        t.__clean_loc = cleanLoc;
+        return t;
+      }
+
+      function rebuildChips() {
+        var catCounts = {};
+        var locCounts = {};
+
+        allTenders.forEach(function (t) {
+          catCounts[t.__clean_cat] = (catCounts[t.__clean_cat] || 0) + 1;
+          locCounts[t.__clean_loc] = (locCounts[t.__clean_loc] || 0) + 1;
+        });
+
+        // Type Chips
+        typeChipsEl.innerHTML = "";
+        var allTypeBtn = document.createElement("button");
+        allTypeBtn.type = "button";
+        allTypeBtn.className = "filter-chip" + (selectedCat === "ALL" ? " active" : "");
+        allTypeBtn.textContent = "All Types (" + allTenders.length + ")";
+        allTypeBtn.onclick = function () {
+          selectedCat = "ALL";
+          currentPage = 1;
+          rebuildChips();
+          applyFilters();
+        };
+        typeChipsEl.appendChild(allTypeBtn);
+
+        Object.keys(catCounts).sort(function (a, b) { return catCounts[b] - catCounts[a]; }).forEach(function (cat) {
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "filter-chip" + (selectedCat === cat ? " active" : "");
+          btn.textContent = cat + " (" + catCounts[cat] + ")";
+          btn.onclick = function () {
+            selectedCat = (selectedCat === cat) ? "ALL" : cat;
+            currentPage = 1;
+            rebuildChips();
+            applyFilters();
+          };
+          typeChipsEl.appendChild(btn);
+        });
+
+        // Location Chips
+        locChipsEl.innerHTML = "";
+        var allLocBtn = document.createElement("button");
+        allLocBtn.type = "button";
+        allLocBtn.className = "filter-chip" + (selectedLoc === "ALL" ? " active" : "");
+        allLocBtn.textContent = "All Locations (" + allTenders.length + ")";
+        allLocBtn.onclick = function () {
+          selectedLoc = "ALL";
+          currentPage = 1;
+          rebuildChips();
+          applyFilters();
+        };
+        locChipsEl.appendChild(allLocBtn);
+
+        Object.keys(locCounts).sort(function (a, b) { return locCounts[b] - locCounts[a]; }).forEach(function (loc) {
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "filter-chip" + (selectedLoc === loc ? " active" : "");
+          btn.textContent = loc + " (" + locCounts[loc] + ")";
+          btn.onclick = function () {
+            selectedLoc = (selectedLoc === loc) ? "ALL" : loc;
+            currentPage = 1;
+            rebuildChips();
+            applyFilters();
+          };
+          locChipsEl.appendChild(btn);
+        });
+      }
+
+      function applyFilters() {
+        filteredTenders = allTenders.filter(function (t) {
+          var matchCat = (selectedCat === "ALL" || t.__clean_cat === selectedCat);
+          var matchLoc = (selectedLoc === "ALL" || t.__clean_loc === selectedLoc);
+          return matchCat && matchLoc;
+        });
+
+        renderTenders();
+      }
+
+      function renderTenderCard(tender) {
+        var card = document.createElement("article");
+        card.className = "tender-card";
+
+        var stateVal = (tender.state && tender.state !== "not listed on the page") ? tender.state : null;
+        var locVal = (tender.location && tender.location !== "not listed on the page") ? tender.location : null;
+        var locationLabel = locVal || stateVal || "Pan India";
+
+        var refId = (tender.type && tender.type !== "not listed on the page") ? tender.type : "Active";
+
+        var header = document.createElement("div");
+        header.className = "tender-card-header";
+        header.innerHTML =
+          '<div class="tender-header-left">' +
+            '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>' +
+            '<span>' + escapeHtml(locationLabel) + '</span>' +
+          '</div>' +
+          '<div class="tender-header-right">' +
+            '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>' +
+            '<span>' + escapeHtml(refId) + '</span>' +
+          '</div>';
+        card.appendChild(header);
+
+        var body = document.createElement("div");
+        body.className = "tender-card-body";
+
+        var title = tender.title || "Tender Notice";
+        var info = document.createElement("p");
+        info.className = "tender-info";
+        info.innerHTML = '<span class="tender-info-label">Tender Info: </span>' + escapeHtml(title);
+        body.appendChild(info);
+
+        var closingDate = (tender.bid_by_date && tender.bid_by_date !== "not listed on the page") ? tender.bid_by_date : "Refer Doc";
+        var closingEl = document.createElement("div");
+        closingEl.className = "tender-closing";
+        closingEl.innerHTML =
+          '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>' +
+          '<span>Closing Date: <strong>' + escapeHtml(closingDate) + '</strong></span>';
+        body.appendChild(closingEl);
+
+        var emdVal = (tender.emd && tender.emd !== "not listed on the page") ? tender.emd : (tender.budget && tender.budget !== "not listed on the page" ? tender.budget : "Refer Doc");
+        var exemptionVal = (tender.emd_exemption && tender.emd_exemption !== "not listed on the page") ? tender.emd_exemption : "Refer Doc";
+        var ecvVal = (tender.ecv && tender.ecv !== "not listed on the page") ? tender.ecv : (tender.budget && tender.budget !== "not listed on the page" ? tender.budget : "Refer Doc");
+
+        var metricsRow = document.createElement("div");
+        metricsRow.className = "tender-metrics-row";
+        metricsRow.innerHTML =
+          '<div class="tender-metric-box"><span class="metric-lbl">EMD</span><span class="metric-val-emd">' + escapeHtml(emdVal) + '</span></div>' +
+          '<div class="tender-metric-box"><span class="metric-lbl">Exemption</span><span class="metric-val-exemption">' + escapeHtml(exemptionVal) + '</span></div>' +
+          '<div class="tender-metric-box"><span class="metric-lbl">ECV</span><span class="metric-val-ecv">' + escapeHtml(ecvVal) + '</span></div>';
+        body.appendChild(metricsRow);
+
+        var actionsRow = document.createElement("div");
+        actionsRow.className = "tender-actions-row";
+
+        var shareUrl = safeUrl(tender.source || tender.url) || window.location.href;
+        var shareTitle = tender.title || "Tender Details";
+
+        var shareIcons = document.createElement("div");
+        shareIcons.className = "tender-share-icons";
+        var socials = [
+          { name: "Facebook", cls: "share-fb", url: "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(shareUrl), svg: '<svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>' },
+          { name: "Twitter", cls: "share-tw", url: "https://twitter.com/intent/tweet?text=" + encodeURIComponent(shareTitle) + "&url=" + encodeURIComponent(shareUrl), svg: '<svg viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>' },
+          { name: "LinkedIn", cls: "share-in", url: "https://www.linkedin.com/sharing/share-offsite/?url=" + encodeURIComponent(shareUrl), svg: '<svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>' },
+          { name: "WhatsApp", cls: "share-wa", url: "https://api.whatsapp.com/send?text=" + encodeURIComponent(shareTitle + " " + shareUrl), svg: '<svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"/></svg>' }
+        ];
+
+        socials.forEach(function (s) {
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "share-btn " + s.cls;
+          btn.setAttribute("aria-label", "Share on " + s.name);
+          btn.innerHTML = s.svg;
+          btn.onclick = function (e) {
+            e.preventDefault();
+            window.open(s.url, "_blank", "noopener,noreferrer");
+          };
+          shareIcons.appendChild(btn);
+        });
+        actionsRow.appendChild(shareIcons);
+
+        var sourceUrl = safeUrl(tender.source || tender.url);
+        var viewBtn = document.createElement("a");
+        viewBtn.className = "view-tender-btn";
+        viewBtn.href = sourceUrl || "#";
+        viewBtn.target = "_blank";
+        viewBtn.rel = "noopener noreferrer";
+        viewBtn.innerHTML =
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>' +
+          '<span>View Tender</span>';
+        actionsRow.appendChild(viewBtn);
+
+        body.appendChild(actionsRow);
+        card.appendChild(body);
+        return card;
+      }
+
+      function updatePagination(maxPages, startIdx, endIdx, total) {
+        [paginationTop, paginationBottom].forEach(function (bar) {
+          if (!bar) return;
+          var prevBtn = bar.querySelector(".prev-btn");
+          var nextBtn = bar.querySelector(".next-btn");
+          var info = bar.querySelector(".page-info");
+
+          if (total > pageSize) {
+            bar.style.display = "flex";
+            if (bottomBar) bottomBar.style.display = "flex";
+            prevBtn.disabled = currentPage <= 1;
+            nextBtn.disabled = currentPage >= maxPages;
+            info.innerHTML = "Page <strong>" + currentPage + "</strong> of <strong>" + maxPages + "</strong>";
+
+            prevBtn.onclick = function () {
+              if (currentPage > 1) {
+                currentPage--;
+                renderTenders();
+                window.scrollTo({ top: 120, behavior: "smooth" });
+              }
+            };
+            nextBtn.onclick = function () {
+              if (currentPage < maxPages) {
+                currentPage++;
+                renderTenders();
+                window.scrollTo({ top: 120, behavior: "smooth" });
+              }
+            };
+          } else {
+            bar.style.display = "none";
+            if (bar === paginationBottom && bottomBar) bottomBar.style.display = "none";
+          }
+        });
+      }
+
+      function renderTenders() {
+        var total = filteredTenders.length;
+        var maxPages = Math.max(1, Math.ceil(total / pageSize));
+        if (currentPage > maxPages) currentPage = maxPages;
+
+        var startIdx = (currentPage - 1) * pageSize;
+        var endIdx = Math.min(startIdx + pageSize, total);
+        var pageItems = filteredTenders.slice(startIdx, endIdx);
+
+        resultsCountEl.innerHTML = total > 0
+          ? "Showing <strong>" + (startIdx + 1) + "–" + endIdx + "</strong> of <strong>" + total + "</strong> tenders"
+          : "No tenders found";
+
+        tendersListEl.innerHTML = "";
+
+        if (total === 0) {
+          var empty = document.createElement("div");
+          empty.className = "empty-state";
+          empty.innerHTML =
+            "<p>No tenders match <strong>" + (selectedCat !== "ALL" ? escapeHtml(selectedCat) : "selected type") + "</strong> in <strong>" + (selectedLoc !== "ALL" ? escapeHtml(selectedLoc) : "selected location") + "</strong>.</p>" +
+            '<button type="button" class="reset-filter-btn" id="reset-btn">Reset Filters</button>';
+          tendersListEl.appendChild(empty);
+          document.getElementById("reset-btn").onclick = function () {
+            selectedCat = "ALL";
+            selectedLoc = "ALL";
+            currentPage = 1;
+            rebuildChips();
+            applyFilters();
+          };
+          updatePagination(1, 0, 0, 0);
+          return;
+        }
+
+        pageItems.forEach(function (tender) {
+          tendersListEl.appendChild(renderTenderCard(tender));
+        });
+
+        updatePagination(maxPages, startIdx, endIdx, total);
+      }
+
+      function fetchTenders(query) {
+        findBtn.disabled = true;
+        btnText.textContent = "Searching...";
+        resultsCountEl.innerHTML = '<span class="spinner"></span> <span>Searching tenders...</span>';
+        tendersListEl.innerHTML = '<div class="empty-state"><div class="spinner"></div><p style="margin-top:10px;">Finding tenders matching "' + escapeHtml(query || "all tenders") + '"...</p></div>';
+
+        fetch("/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            site_key: siteKey,
+            message: query || "all tenders"
+          })
+        })
+        .then(function (res) {
+          if (!res.ok) throw new Error("HTTP error " + res.status);
+          return res.json();
+        })
+        .then(function (data) {
+          findBtn.disabled = false;
+          btnText.textContent = "Find Tenders";
+
+          var rawTenders = Array.isArray(data.tenders) ? data.tenders : [];
+          allTenders = rawTenders.map(normalizeTender);
+          selectedCat = "ALL";
+          selectedLoc = "ALL";
+          currentPage = 1;
+
+          rebuildChips();
+          applyFilters();
+        })
+        .catch(function (err) {
+          findBtn.disabled = false;
+          btnText.textContent = "Find Tenders";
+          resultsCountEl.textContent = "Search error";
+          tendersListEl.innerHTML =
+            '<div class="empty-state" style="border-color:#fca5a5;color:#b91c1c;">' +
+            '<p>Could not load tenders: ' + escapeHtml(err.message) + '</p>' +
+            '<button type="button" class="reset-filter-btn" onclick="location.reload();">Retry</button>' +
+            '</div>';
+        });
+      }
+
+      // Handle search submission
+      searchForm.onsubmit = function (e) {
+        e.preventDefault();
+        var q = searchInput.value.trim();
+        fetchTenders(q || "all tenders");
       };
 
+      searchInput.oninput = function () {
+        clearBtn.style.display = searchInput.value.trim() ? "block" : "none";
+      };
 
+      clearBtn.onclick = function () {
+        searchInput.value = "";
+        clearBtn.style.display = "none";
+        fetchTenders("all tenders");
+      };
 
-      function attachWidget() {
+      // Quick query chips
+      document.querySelectorAll(".quick-chip").forEach(function (btn) {
+        btn.onclick = function () {
+          var q = btn.getAttribute("data-q");
+          searchInput.value = (q === "all tenders" ? "" : q);
+          clearBtn.style.display = searchInput.value ? "block" : "none";
+          fetchTenders(q);
+        };
+      });
+
+      // Attach floating widget as well
+      function attachFloatingWidget() {
         if (!siteKey) return;
         if (document.querySelector('script[data-site="' + siteKey + '"]')) return;
         var script = document.createElement("script");
@@ -381,87 +1112,16 @@
         document.body.appendChild(script);
       }
 
-      function showNoSiteSelected() {
-        siteTitle.textContent = "No Website Indexed Yet";
-        siteSub.textContent = "Connect a website to index its tenders and start searching.";
-        noticeBox.className = "notice-box notice-error";
-        noticeBox.innerHTML = '<span>No portal indexed yet. <a href="/" style="color:inherit;font-weight:700;text-decoration:underline;">Index a website on dashboard &rarr;</a></span>';
-        findBtn.style.display = "none";
-        siteMeta.textContent = "Status: Idle";
+      // Initial load
+      if (initialQuery) {
+        searchInput.value = initialQuery;
+        clearBtn.style.display = "block";
+        fetchTenders(initialQuery);
+      } else {
+        fetchTenders("all tenders");
       }
 
-      function pollStatus() {
-        if (!siteKey) return;
-        fetch("/sites/" + encodeURIComponent(siteKey) + "/status")
-          .then(function (res) {
-            if (!res.ok) throw new Error("Status endpoint returned " + res.status);
-            return res.json();
-          })
-          .then(function (data) {
-            siteTitle.textContent = "Tender Search — " + (data.domain || "Portal");
-            siteSub.textContent = "Instant search across all verified tenders from " + (data.url || data.domain);
-
-            if (data.status === "ready") {
-              noticeBox.className = "notice-box notice-ready";
-              noticeBox.innerHTML = "<span>👉 <strong>Click Find Tenders to search for tenders</strong></span>";
-              siteMeta.textContent = "Status: Ready • " + (data.pages_indexed || 0) + " tenders indexed";
-              findBtn.disabled = false;
-              findBtn.style.display = "inline-flex";
-              attachWidget();
-            } else if (data.status === "failed") {
-              noticeBox.className = "notice-box notice-error";
-              noticeBox.innerHTML = "<span>Crawl failed: " + (data.last_error || "Unknown error") + "</span>";
-              siteMeta.textContent = "Status: Failed";
-              findBtn.disabled = true;
-            } else {
-              noticeBox.className = "notice-box notice-crawling";
-              noticeBox.innerHTML = '<span class="spinner"></span> <span>Crawling website tenders (' + (data.pages_found || 0) + ' pages found)...</span>';
-              siteMeta.textContent = "Status: " + data.status.charAt(0).toUpperCase() + data.status.slice(1);
-              findBtn.disabled = true;
-              setTimeout(pollStatus, 1500);
-            }
-          })
-          .catch(function (err) {
-            console.warn("Poll failed:", err);
-            noticeBox.className = "notice-box notice-ready";
-            noticeBox.innerHTML = "<span>👉 <strong>Click Find Tenders to search for tenders</strong></span>";
-            findBtn.disabled = false;
-            findBtn.style.display = "inline-flex";
-            attachWidget();
-          });
-      }
-
-      function start() {
-        if (siteKey) {
-          pollStatus();
-          return;
-        }
-
-        fetch("/api/sites")
-          .then(function (res) {
-            if (!res.ok) throw new Error("Failed to fetch sites");
-            return res.json();
-          })
-          .then(function (sites) {
-            if (Array.isArray(sites) && sites.length > 0) {
-              var readySite = sites.find(function (s) { return s.status === "ready"; }) || sites[0];
-              if (readySite && readySite.site_key) {
-                siteKey = readySite.site_key;
-                if (window.history && window.history.replaceState) {
-                  window.history.replaceState(null, "", "/search?site=" + encodeURIComponent(siteKey));
-                }
-                pollStatus();
-                return;
-              }
-            }
-            showNoSiteSelected();
-          })
-          .catch(function () {
-            showNoSiteSelected();
-          });
-      }
-
-      start();
+      attachFloatingWidget();
     })();
   </script>
 </body>
