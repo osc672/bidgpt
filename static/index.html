@@ -1,0 +1,646 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BidGPT — Tender Intelligence & Search Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --brand: #0f766e;
+      --brand-hover: #0d9488;
+      --brand-light: #f0fdfa;
+      --brand-border: #ccfbf1;
+      --brand-ink: #ffffff;
+      --accent: #2563eb;
+      --danger: #ef4444;
+      --success: #10b981;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.08);
+      --shadow-lg: 0 12px 36px -4px rgba(15, 23, 42, 0.12);
+      --radius: 16px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #090e17;
+        --surface: #111a28;
+        --text: #f1f5f9;
+        --text-muted: #94a3b8;
+        --border: #1e293b;
+        --brand: #14b8a6;
+        --brand-hover: #2dd4bf;
+        --brand-light: rgba(20, 184, 166, 0.1);
+        --brand-border: rgba(20, 184, 166, 0.25);
+        --brand-ink: #042f2e;
+        --accent: #3b82f6;
+        --danger: #f87171;
+        --success: #34d399;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+        --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
+        --shadow-lg: 0 12px 36px -4px rgba(0, 0, 0, 0.6);
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(12px);
+    }
+    .logo-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 21px;
+      color: var(--brand);
+      letter-spacing: -0.02em;
+      text-decoration: none;
+    }
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(15, 118, 110, 0.25);
+    }
+    .logo-badge {
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: var(--brand-light);
+      color: var(--brand);
+      border: 1px solid var(--brand-border);
+      letter-spacing: 0.05em;
+    }
+    .header-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .header-link {
+      color: var(--text-muted);
+      font-size: 13.5px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .header-link:hover {
+      color: var(--brand);
+    }
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 48px 24px 120px;
+    }
+    .hero {
+      text-align: center;
+      margin-bottom: 44px;
+    }
+    .hero-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: var(--brand-light);
+      border: 1px solid var(--brand-border);
+      color: var(--brand);
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    .hero-pill span.pulse {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--brand);
+      box-shadow: 0 0 0 0 rgba(15, 118, 110, 0.7);
+      animation: pulse 1.6s infinite;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(15, 118, 110, 0.7); }
+      70% { box-shadow: 0 0 0 7px rgba(15, 118, 110, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(15, 118, 110, 0); }
+    }
+    h1 {
+      font-size: clamp(32px, 5vw, 48px);
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin: 0 0 16px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--text) 30%, var(--brand) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    p.lead {
+      color: var(--text-muted);
+      font-size: 17.5px;
+      max-width: 64ch;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 36px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      box-shadow: var(--shadow-sm);
+    }
+    .stat-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .stat-val {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--brand);
+      letter-spacing: -0.02em;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 30px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      gap: 16px;
+    }
+    .card h2 {
+      margin: 0 0 6px;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+    }
+    .card p.sub {
+      color: var(--text-muted);
+      font-size: 14.5px;
+      margin: 0;
+    }
+    .form-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .form-row > input {
+      flex: 1 1 320px;
+    }
+    input {
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      background: var(--bg);
+      color: var(--text);
+      padding: 13px 18px;
+      font-size: 15px;
+      font-family: inherit;
+      outline: none;
+      transition: all 0.15s ease;
+    }
+    input:focus {
+      border-color: var(--brand);
+      background: var(--surface);
+      box-shadow: 0 0 0 4px var(--brand-light);
+    }
+    button.primary-btn {
+      border: 0;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 14.5px;
+      padding: 13px 26px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(15, 118, 110, 0.25);
+      transition: all 0.15s ease;
+    }
+    button.primary-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(15, 118, 110, 0.35);
+    }
+    button.primary-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .toast-msg {
+      margin-top: 14px;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .portal-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 20px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      transition: all 0.15s ease;
+    }
+    .portal-row:hover {
+      border-color: var(--brand-border);
+      background: var(--surface);
+      box-shadow: var(--shadow-sm);
+    }
+    .portal-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .portal-domain {
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--text);
+    }
+    .portal-meta {
+      font-size: 13px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .status-ready {
+      background: #ecfdf5;
+      color: #047857;
+      border: 1px solid #a7f3d0;
+    }
+    .status-crawling {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+    }
+    .status-failed {
+      background: #fef2f2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+    .action-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 13px;
+      padding: 9px 18px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(15, 118, 110, 0.2);
+      transition: all 0.15s ease;
+    }
+    .action-link:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(15, 118, 110, 0.3);
+    }
+    .embed-snippet-wrap {
+      margin-top: 18px;
+      position: relative;
+    }
+    .embed-snippet {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      overflow-x: auto;
+    }
+    .embed-snippet code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13.5px;
+      color: var(--text);
+      word-break: break-all;
+    }
+    .copy-btn {
+      position: absolute;
+      right: 12px;
+      top: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+    }
+    .copy-btn:hover {
+      border-color: var(--brand);
+      color: var(--brand);
+    }
+    @media (max-width: 680px) {
+      header { padding: 14px 20px; }
+      main { padding: 32px 16px 80px; }
+      .stats-grid { grid-template-columns: 1fr; }
+      .card { padding: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="/" class="logo-group">
+      <div class="logo-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+          <line x1="12" y1="22.08" x2="12" y2="12"></line>
+        </svg>
+      </div>
+      <span>BidGPT</span>
+      <span class="logo-badge">Live</span>
+    </a>
+    <div class="header-links">
+      <a href="/docs" class="header-link">API Docs</a>
+      <a href="/health" class="header-link">Health</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-pill">
+        <span class="pulse"></span>
+        <span>AI-Powered Tender Assistant</span>
+      </div>
+      <h1>Tender Intelligence for Any Portal</h1>
+      <p class="lead">
+        Crawl any government or corporate procurement portal once. Search verified active tenders with natural language, category filters, and direct links.
+      </p>
+    </section>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-label">System Engine</span>
+        <span class="stat-val" style="color:var(--success);">Active</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Search Speed</span>
+        <span class="stat-val">&lt; 30ms</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Official Sources</span>
+        <span class="stat-val">100% Direct</span>
+      </div>
+    </div>
+
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h2>Connect a New Website</h2>
+          <p class="sub">Enter any tender portal or procurement authority URL to crawl and index its tenders:</p>
+        </div>
+      </div>
+      <form id="connect-form">
+        <div class="form-row">
+          <input type="url" id="site-url" required placeholder="https://bidassist.com" autocomplete="url" />
+          <button type="submit" id="crawl-btn" class="primary-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+            <span>Start Crawl</span>
+          </button>
+        </div>
+      </form>
+      <div class="toast-msg" id="connect-msg"></div>
+    </section>
+
+    <section class="card" id="indexed-portals-card" style="display: none;">
+      <div class="card-header">
+        <div>
+          <h2>Indexed Portals</h2>
+          <p class="sub">The following procurement portals are indexed and ready for immediate search:</p>
+        </div>
+      </div>
+      <div id="indexed-portals-list"></div>
+    </section>
+
+    <section class="card" id="embed-card" style="display: none;">
+      <div class="card-header">
+        <div>
+          <h2>Embed on Your Website</h2>
+          <p class="sub">Add this lightweight snippet to any webpage to embed the floating BidGPT tender assistant:</p>
+        </div>
+      </div>
+      <div class="embed-snippet-wrap">
+        <button type="button" class="copy-btn" id="copy-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          <span id="copy-text">Copy</span>
+        </button>
+        <div class="embed-snippet">
+          <code id="embed-code"></code>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      var urlParams = new URLSearchParams(window.location.search);
+      var currentSiteKey = urlParams.get("site");
+      var embedCard = document.getElementById("embed-card");
+      var embedCode = document.getElementById("embed-code");
+      var copyBtn = document.getElementById("copy-btn");
+      var copyText = document.getElementById("copy-text");
+      var connectForm = document.getElementById("connect-form");
+      var connectMsg = document.getElementById("connect-msg");
+
+      if (copyBtn && embedCode) {
+        copyBtn.addEventListener("click", function () {
+          navigator.clipboard.writeText(embedCode.textContent).then(function () {
+            copyText.textContent = "Copied!";
+            setTimeout(function () { copyText.textContent = "Copy"; }, 2000);
+          });
+        });
+      }
+
+      function updateEmbedCode(siteKey) {
+        var base = window.location.origin;
+        if (embedCode) {
+          embedCode.textContent = '<script src="' + base + '/widget.js" data-site="' + siteKey + '" defer><\/script>';
+        }
+        if (embedCard) {
+          embedCard.style.display = "block";
+        }
+      }
+
+      function loadWidget(siteKey) {
+        if (!siteKey) return;
+        updateEmbedCode(siteKey);
+
+        var oldRoot = document.getElementById("bidgpt-root");
+        if (oldRoot) oldRoot.remove();
+        window.__bidgptWidgetLoaded = false;
+
+        var oldScript = document.querySelector('script[data-site]');
+        if (oldScript) oldScript.remove();
+
+        var script = document.createElement("script");
+        script.src = "/widget.js";
+        script.setAttribute("data-site", siteKey);
+        script.defer = true;
+        document.body.appendChild(script);
+      }
+
+      if (currentSiteKey) {
+        loadWidget(currentSiteKey);
+      }
+
+      function fetchIndexedSites() {
+        fetch("/api/sites")
+          .then(function (res) { return res.json(); })
+          .then(function (sites) {
+            if (!Array.isArray(sites) || !sites.length) return;
+            var portalsCard = document.getElementById("indexed-portals-card");
+            var portalsList = document.getElementById("indexed-portals-list");
+            if (portalsCard && portalsList) {
+              portalsList.innerHTML = "";
+              sites.forEach(function (site) {
+                var row = document.createElement("div");
+                row.className = "portal-row";
+                var statusClass = site.status === "ready" ? "status-ready" : (site.status === "failed" ? "status-failed" : "status-crawling");
+                row.innerHTML =
+                  '<div class="portal-info">' +
+                    '<div class="portal-domain">' + (site.domain || site.url) + '</div>' +
+                    '<div class="portal-meta">' +
+                      '<span><strong>' + (site.pages_indexed || 0) + '</strong> tenders indexed</span>' +
+                      '<span class="status-badge ' + statusClass + '">' + site.status + '</span>' +
+                    '</div>' +
+                  '</div>' +
+                  '<a href="/search?site=' + encodeURIComponent(site.site_key) + '" class="action-link">' +
+                    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>' +
+                    '<span>Find Tenders &rarr;</span>' +
+                  '</a>';
+                portalsList.appendChild(row);
+              });
+              portalsCard.style.display = "block";
+            }
+
+            if (!currentSiteKey) {
+              var readySite = sites.find(function (s) { return s.status === "ready"; }) || sites[0];
+              if (readySite && readySite.site_key) {
+                loadWidget(readySite.site_key);
+              }
+            }
+          })
+          .catch(function (err) {
+            console.warn("Could not load indexed sites:", err);
+          });
+      }
+
+      fetchIndexedSites();
+
+      connectForm.onsubmit = function (e) {
+        e.preventDefault();
+        var urlInput = document.getElementById("site-url");
+        var btn = document.getElementById("crawl-btn");
+        var url = urlInput.value.trim();
+        if (!url) return;
+
+        btn.disabled = true;
+        btn.textContent = "Starting...";
+        connectMsg.style.color = "var(--text-muted)";
+        connectMsg.textContent = "Initiating crawl for " + url + "...";
+
+        fetch("/sites", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: url })
+        })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          btn.disabled = false;
+          btn.textContent = "Start Crawl";
+          if (data.site_key) {
+            var searchUrl = "/search?site=" + encodeURIComponent(data.site_key);
+            connectMsg.style.color = "var(--brand)";
+            connectMsg.innerHTML = 'Opening Tender Search window... <a href="' + searchUrl + '" target="_blank" style="color:var(--brand);font-weight:700;text-decoration:underline;">Click here if window did not open</a>';
+            
+            var win = window.open(searchUrl, "_blank");
+            if (!win || win.closed || typeof win.closed === "undefined") {
+              window.location.href = searchUrl;
+            }
+          } else {
+            connectMsg.style.color = "var(--danger)";
+            connectMsg.textContent = data.detail || "Registration failed";
+          }
+        })
+        .catch(function (err) {
+          btn.disabled = false;
+          btn.textContent = "Start Crawl";
+          connectMsg.style.color = "var(--danger)";
+          connectMsg.textContent = "Error: " + err.message;
+        });
+      };
+    })();
+  </script>
+</body>
+</html>

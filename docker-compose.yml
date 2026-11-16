@@ -1,0 +1,49 @@
+services:
+  bidgpt:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: bidgpt:latest
+    container_name: bidgpt
+    init: true
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8000}:8000"
+    environment:
+      BIDGPT_DATA_DIR: /data
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-}
+      CRAWL_DEPTH: ${CRAWL_DEPTH:-2}
+      MAX_PAGES: ${MAX_PAGES:-100}
+      RECRAWL_INTERVAL_SECONDS: ${RECRAWL_INTERVAL_SECONDS:-21600}
+      REQUEST_DELAY_SECONDS: ${REQUEST_DELAY_SECONDS:-0.5}
+      REQUEST_TIMEOUT_SECONDS: ${REQUEST_TIMEOUT_SECONDS:-20}
+      USER_AGENT: ${USER_AGENT:-BidGPTBot/1.0}
+      PLAYWRIGHT_ENABLED: ${PLAYWRIGHT_ENABLED:-true}
+      PLAYWRIGHT_WAIT_MS: ${PLAYWRIGHT_WAIT_MS:-750}
+      ALLOW_PRIVATE_URLS: ${ALLOW_PRIVATE_URLS:-false}
+      LLM_PROVIDER: ${LLM_PROVIDER:-openai}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_MODEL: ${LLM_MODEL:-}
+      LLM_BASE_URL: ${LLM_BASE_URL:-}
+      LLM_TIMEOUT_SECONDS: ${LLM_TIMEOUT_SECONDS:-30}
+      CHAT_RATE_LIMIT_PER_IP: ${CHAT_RATE_LIMIT_PER_IP:-20}
+      CHAT_RATE_LIMIT_PER_SITE: ${CHAT_RATE_LIMIT_PER_SITE:-60}
+      RATE_LIMIT_WINDOW_SECONDS: ${RATE_LIMIT_WINDOW_SECONDS:-60}
+      ADMIN_API_KEY: ${ADMIN_API_KEY:-}
+      TRUST_PROXY: ${TRUST_PROXY:-false}
+      WIDGET_EXTRA_ORIGINS: ${WIDGET_EXTRA_ORIGINS:-}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    volumes:
+      - ./data:/data
+    # Chromium benefits from a larger /dev/shm in containers.
+    shm_size: "1gb"
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import sys,urllib.request; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3).status == 200 else 1)"
+      interval: 30s
+      timeout: 5s
+      start_period: 25s
+      retries: 3

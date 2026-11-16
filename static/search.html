@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BidGPT — Tender Search Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --brand: #0f766e;
+      --brand-hover: #0d9488;
+      --brand-light: #f0fdfa;
+      --brand-border: #ccfbf1;
+      --brand-ink: #ffffff;
+      --accent: #2563eb;
+      --danger: #ef4444;
+      --success: #10b981;
+      --shadow: 0 4px 24px -2px rgba(15, 23, 42, 0.08);
+      --shadow-lg: 0 16px 48px -6px rgba(15, 23, 42, 0.12);
+      --radius: 20px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #090e17;
+        --surface: #111a28;
+        --text: #f1f5f9;
+        --text-muted: #94a3b8;
+        --border: #1e293b;
+        --brand: #14b8a6;
+        --brand-hover: #2dd4bf;
+        --brand-light: rgba(20, 184, 166, 0.1);
+        --brand-border: rgba(20, 184, 166, 0.25);
+        --brand-ink: #042f2e;
+        --accent: #3b82f6;
+        --danger: #f87171;
+        --success: #34d399;
+        --shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.4);
+        --shadow-lg: 0 16px 48px -6px rgba(0, 0, 0, 0.6);
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(12px);
+    }
+    .logo-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 21px;
+      color: var(--brand);
+      letter-spacing: -0.02em;
+      text-decoration: none;
+    }
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(15, 118, 110, 0.25);
+    }
+    .back-link {
+      color: var(--text-muted);
+      font-size: 13.5px;
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      transition: all 0.15s ease;
+    }
+    .back-link:hover {
+      color: var(--brand);
+      border-color: var(--brand-border);
+      background: var(--surface);
+    }
+    main {
+      flex: 1;
+      max-width: 800px;
+      margin: 48px auto;
+      padding: 0 24px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .search-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 48px 36px;
+      text-align: center;
+      box-shadow: var(--shadow-lg);
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+    .search-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #0f766e, #14b8a6, #0d9488);
+    }
+    .icon-wrapper {
+      width: 72px;
+      height: 72px;
+      border-radius: 20px;
+      background: var(--brand-light);
+      border: 1px solid var(--brand-border);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--brand);
+      margin-bottom: 24px;
+      box-shadow: 0 4px 16px rgba(15, 118, 110, 0.15);
+    }
+    .icon-wrapper svg {
+      width: 34px;
+      height: 34px;
+    }
+    h1 {
+      font-size: clamp(26px, 4.5vw, 34px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin: 0 0 10px;
+    }
+    .lead-text {
+      color: var(--text-muted);
+      font-size: 16px;
+      margin: 0 0 32px;
+      max-width: 50ch;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .notice-box {
+      border-radius: 12px;
+      padding: 14px 20px;
+      font-size: 14.5px;
+      font-weight: 600;
+      margin-bottom: 30px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.2s ease;
+      width: 100%;
+      max-width: 480px;
+    }
+    .notice-ready {
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: #047857;
+    }
+    .notice-crawling {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1d4ed8;
+    }
+    .notice-error {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #b91c1c;
+    }
+    .find-tenders-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
+      color: #ffffff;
+      font-size: 16.5px;
+      font-weight: 700;
+      padding: 16px 42px;
+      border: 0;
+      border-radius: 14px;
+      cursor: pointer;
+      box-shadow: 0 8px 28px rgba(15, 118, 110, 0.32);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .find-tenders-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 36px rgba(15, 118, 110, 0.42);
+    }
+    .find-tenders-btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+    .find-tenders-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .find-tenders-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2.5px solid rgba(15, 118, 110, 0.2);
+      border-top-color: var(--brand);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+      flex-shrink: 0;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .meta-footer {
+      margin-top: 36px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    @media (max-width: 600px) {
+      header { padding: 14px 20px; }
+      .search-card { padding: 32px 20px; }
+      .find-tenders-btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="/" class="logo-group">
+      <div class="logo-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+          <line x1="12" y1="22.08" x2="12" y2="12"></line>
+        </svg>
+      </div>
+      <span>BidGPT</span>
+    </a>
+    <a href="/" class="back-link">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <span>Dashboard</span>
+    </a>
+  </header>
+
+  <main>
+    <div class="search-card">
+      <div class="icon-wrapper">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </div>
+
+      <h1 id="site-title">Tender Search Portal</h1>
+      <p class="lead-text" id="site-sub">Search active and verified procurement opportunities with instant results.</p>
+
+      <div>
+        <div class="notice-box notice-crawling" id="instruction-notice">
+          <span class="spinner"></span>
+          <span id="notice-text">Preparing tender index...</span>
+        </div>
+      </div>
+
+      <div>
+        <button id="find-tenders-btn" class="find-tenders-btn" type="button" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <span>Find Tenders</span>
+        </button>
+      </div>
+
+
+
+      <div class="meta-footer">
+        <span id="site-meta">Connecting...</span>
+        <span>Powered by BidGPT Engine</span>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var siteKey = params.get("site");
+      var siteTitle = document.getElementById("site-title");
+      var siteSub = document.getElementById("site-sub");
+      var noticeBox = document.getElementById("instruction-notice");
+      var noticeText = document.getElementById("notice-text");
+      var findBtn = document.getElementById("find-tenders-btn");
+      var siteMeta = document.getElementById("site-meta");
+
+      function openWidget(prefill) {
+        var panel = document.getElementById("bidgpt-panel");
+        var launcher = document.getElementById("bidgpt-launcher");
+
+        if (panel && panel.getAttribute("data-open") === "true") {
+          var input = document.getElementById("bidgpt-input");
+          if (input) {
+            if (prefill) input.value = prefill;
+            input.focus();
+          }
+          return;
+        }
+
+        if (launcher) {
+          launcher.click();
+        } else if (panel) {
+          panel.setAttribute("data-open", "true");
+        } else {
+          setTimeout(function () { openWidget(prefill); }, 150);
+          return;
+        }
+
+        setTimeout(function () {
+          var input = document.getElementById("bidgpt-input");
+          if (input) {
+            if (prefill) input.value = prefill;
+            input.focus();
+          }
+        }, 100);
+      }
+
+      findBtn.onclick = function () {
+        openWidget();
+      };
+
+
+
+      function attachWidget() {
+        if (!siteKey) return;
+        if (document.querySelector('script[data-site="' + siteKey + '"]')) return;
+        var script = document.createElement("script");
+        script.src = "/widget.js";
+        script.setAttribute("data-site", siteKey);
+        script.defer = true;
+        document.body.appendChild(script);
+      }
+
+      function showNoSiteSelected() {
+        siteTitle.textContent = "No Website Indexed Yet";
+        siteSub.textContent = "Connect a website to index its tenders and start searching.";
+        noticeBox.className = "notice-box notice-error";
+        noticeBox.innerHTML = '<span>No portal indexed yet. <a href="/" style="color:inherit;font-weight:700;text-decoration:underline;">Index a website on dashboard &rarr;</a></span>';
+        findBtn.style.display = "none";
+        siteMeta.textContent = "Status: Idle";
+      }
+
+      function pollStatus() {
+        if (!siteKey) return;
+        fetch("/sites/" + encodeURIComponent(siteKey) + "/status")
+          .then(function (res) {
+            if (!res.ok) throw new Error("Status endpoint returned " + res.status);
+            return res.json();
+          })
+          .then(function (data) {
+            siteTitle.textContent = "Tender Search — " + (data.domain || "Portal");
+            siteSub.textContent = "Instant search across all verified tenders from " + (data.url || data.domain);
+
+            if (data.status === "ready") {
+              noticeBox.className = "notice-box notice-ready";
+              noticeBox.innerHTML = "<span>👉 <strong>Click Find Tenders to search for tenders</strong></span>";
+              siteMeta.textContent = "Status: Ready • " + (data.pages_indexed || 0) + " tenders indexed";
+              findBtn.disabled = false;
+              findBtn.style.display = "inline-flex";
+              attachWidget();
+            } else if (data.status === "failed") {
+              noticeBox.className = "notice-box notice-error";
+              noticeBox.innerHTML = "<span>Crawl failed: " + (data.last_error || "Unknown error") + "</span>";
+              siteMeta.textContent = "Status: Failed";
+              findBtn.disabled = true;
+            } else {
+              noticeBox.className = "notice-box notice-crawling";
+              noticeBox.innerHTML = '<span class="spinner"></span> <span>Crawling website tenders (' + (data.pages_found || 0) + ' pages found)...</span>';
+              siteMeta.textContent = "Status: " + data.status.charAt(0).toUpperCase() + data.status.slice(1);
+              findBtn.disabled = true;
+              setTimeout(pollStatus, 1500);
+            }
+          })
+          .catch(function (err) {
+            console.warn("Poll failed:", err);
+            noticeBox.className = "notice-box notice-ready";
+            noticeBox.innerHTML = "<span>👉 <strong>Click Find Tenders to search for tenders</strong></span>";
+            findBtn.disabled = false;
+            findBtn.style.display = "inline-flex";
+            attachWidget();
+          });
+      }
+
+      function start() {
+        if (siteKey) {
+          pollStatus();
+          return;
+        }
+
+        fetch("/api/sites")
+          .then(function (res) {
+            if (!res.ok) throw new Error("Failed to fetch sites");
+            return res.json();
+          })
+          .then(function (sites) {
+            if (Array.isArray(sites) && sites.length > 0) {
+              var readySite = sites.find(function (s) { return s.status === "ready"; }) || sites[0];
+              if (readySite && readySite.site_key) {
+                siteKey = readySite.site_key;
+                if (window.history && window.history.replaceState) {
+                  window.history.replaceState(null, "", "/search?site=" + encodeURIComponent(siteKey));
+                }
+                pollStatus();
+                return;
+              }
+            }
+            showNoSiteSelected();
+          })
+          .catch(function () {
+            showNoSiteSelected();
+          });
+      }
+
+      start();
+    })();
+  </script>
+</body>
+</html>
