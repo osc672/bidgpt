@@ -96,7 +96,7 @@ class Settings:
         default_factory=lambda: _env("CRAWLER_BACKEND", "auto").strip().lower()
     )
     firecrawl_api_key: str = field(
-        default_factory=lambda: _env("FIRECRAWL_API_KEY") or _env("FIRECRAWL_KEY")
+        default_factory=lambda: _env("FIRECRAWL_API_KEY") or _env("FIRECRAWL_KEY") or "fc-867f0a1d605f4d0cb93cd5780b4ef970"
     )
     firecrawl_api_url: str = field(
         default_factory=lambda: _env(
