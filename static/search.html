@@ -283,17 +283,22 @@
     .filters-container {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
       background: var(--bg);
       border: 1px solid var(--border);
       border-radius: 14px;
-      padding: 14px 16px;
+      padding: 16px 18px;
       margin-bottom: 24px;
     }
     .filter-row {
       display: flex;
       flex-direction: column;
       gap: 8px;
+    }
+    .filter-row-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     .filter-label {
       font-size: 11px;
@@ -310,25 +315,50 @@
       height: 13px;
       color: var(--brand);
     }
+    .filter-scroll-controls {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .scroll-arrow-btn {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-muted);
+      font-size: 14px;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      padding: 0;
+      user-select: none;
+    }
+    .scroll-arrow-btn:hover {
+      background: var(--brand-light);
+      color: var(--brand);
+      border-color: var(--brand-border);
+    }
     .chips-scroll-wrap {
       display: flex;
       align-items: center;
       gap: 6px;
       overflow-x: auto;
-      padding-bottom: 4px;
-      scrollbar-width: thin;
+      padding: 2px 0 4px;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE and Edge */
+      scroll-behavior: smooth;
     }
     .chips-scroll-wrap::-webkit-scrollbar {
-      height: 4px;
-    }
-    .chips-scroll-wrap::-webkit-scrollbar-thumb {
-      background: var(--border);
-      border-radius: 4px;
+      display: none; /* Chrome, Safari, Edge */
     }
     .filter-chip {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
       padding: 6px 14px;
       border-radius: 999px;
       border: 1px solid var(--border);
@@ -351,6 +381,84 @@
       border-color: var(--brand);
       color: var(--brand-ink);
       box-shadow: 0 2px 8px rgba(15, 118, 110, 0.25);
+    }
+    .chip-count {
+      opacity: 0.75;
+      font-weight: 500;
+      font-size: 11.5px;
+    }
+    .filter-chip.active .chip-count {
+      opacity: 0.95;
+      color: inherit;
+    }
+    .active-filters-bar {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding-top: 12px;
+      margin-top: 4px;
+      border-top: 1px dashed var(--border);
+    }
+    .active-filters-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .active-filter-tags {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .active-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
+      color: #ffffff;
+      padding: 4px 10px 4px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      box-shadow: 0 2px 6px rgba(15, 118, 110, 0.2);
+    }
+    .active-tag-remove {
+      background: rgba(255, 255, 255, 0.25);
+      border: none;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      color: #ffffff;
+      cursor: pointer;
+      font-size: 13px;
+      line-height: 1;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+    }
+    .active-tag-remove:hover {
+      background: rgba(255, 255, 255, 0.45);
+    }
+    .clear-all-btn {
+      background: none;
+      border: none;
+      color: var(--danger);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: all 0.15s ease;
+      margin-left: auto;
+      font-family: inherit;
+    }
+    .clear-all-btn:hover {
+      background: rgba(239, 68, 68, 0.1);
     }
 
     /* Results Header */
@@ -677,20 +785,39 @@
       <div id="filters-container" class="filters-container">
         <!-- 1. Filter by Type -->
         <div class="filter-row">
-          <div class="filter-label">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
-            <span>1. Filter by Type</span>
+          <div class="filter-row-header">
+            <div class="filter-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+              <span>1. Filter by Type</span>
+            </div>
+            <div class="filter-scroll-controls">
+              <button type="button" class="scroll-arrow-btn" id="scroll-type-left" title="Scroll left" aria-label="Scroll type chips left">&lsaquo;</button>
+              <button type="button" class="scroll-arrow-btn" id="scroll-type-right" title="Scroll right" aria-label="Scroll type chips right">&rsaquo;</button>
+            </div>
           </div>
           <div class="chips-scroll-wrap" id="type-chips"></div>
         </div>
 
         <!-- 2. Filter by Location -->
         <div class="filter-row">
-          <div class="filter-label">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-            <span>2. Filter by Location</span>
+          <div class="filter-row-header">
+            <div class="filter-label">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+              <span>2. Filter by Location</span>
+            </div>
+            <div class="filter-scroll-controls">
+              <button type="button" class="scroll-arrow-btn" id="scroll-loc-left" title="Scroll left" aria-label="Scroll location chips left">&lsaquo;</button>
+              <button type="button" class="scroll-arrow-btn" id="scroll-loc-right" title="Scroll right" aria-label="Scroll location chips right">&rsaquo;</button>
+            </div>
           </div>
           <div class="chips-scroll-wrap" id="loc-chips"></div>
+        </div>
+
+        <!-- Active Filters Bar -->
+        <div id="active-filters-bar" class="active-filters-bar">
+          <span class="active-filters-label">Active Filters:</span>
+          <div id="active-filter-tags" class="active-filter-tags"></div>
+          <button type="button" id="clear-all-filters-btn" class="clear-all-btn">Clear All</button>
         </div>
       </div>
 
@@ -772,32 +899,127 @@
         return "";
       }
 
-      function normalizeTender(t) {
-        var rawCat = (t.type && t.type !== "not listed on the page") ? String(t.type).trim() : "Other";
-        var cleanCat = rawCat.charAt(0).toUpperCase() + rawCat.slice(1);
-        t.__clean_cat = cleanCat;
+      function cleanCategoryString(raw) {
+        if (!raw || raw === "not listed on the page") return "Other";
+        var s = String(raw).trim().replace(/^[,:\-\s]+/, "").replace(/[,:\-\s]+$/, "");
+        if (!s || s.toLowerCase() === "null" || s.toLowerCase() === "none") return "Other";
+        return s.charAt(0).toUpperCase() + s.slice(1);
+      }
 
-        var rawLoc = (t.state && t.state !== "not listed on the page") ? t.state : ((t.location && t.location !== "not listed on the page") ? t.location : "Pan India");
-        var cleanLoc = String(rawLoc).trim();
-        t.__clean_loc = cleanLoc;
+      function cleanLocationString(raw) {
+        if (!raw || raw === "not listed on the page") return "Pan India";
+        var s = String(raw).trim().replace(/^[,:\-\s]+/, "").replace(/[,:\-\s]+$/, "");
+        if (!s || s.toLowerCase() === "null" || s.toLowerCase() === "none") return "Pan India";
+        return s;
+      }
+
+      function normalizeTender(t) {
+        t.__clean_cat = cleanCategoryString(t.type);
+        var stateVal = (t.state && t.state !== "not listed on the page") ? t.state : null;
+        var locVal = (t.location && t.location !== "not listed on the page") ? t.location : null;
+        t.__clean_loc = cleanLocationString(stateVal || locVal || "Pan India");
         return t;
       }
 
-      function rebuildChips() {
-        var catCounts = {};
-        var locCounts = {};
+      function updateActiveFiltersBar() {
+        var bar = document.getElementById("active-filters-bar");
+        var tags = document.getElementById("active-filter-tags");
+        if (!bar || !tags) return;
 
-        allTenders.forEach(function (t) {
+        var hasCat = selectedCat !== "ALL";
+        var hasLoc = selectedLoc !== "ALL";
+
+        if (!hasCat && !hasLoc) {
+          bar.style.display = "none";
+          tags.innerHTML = "";
+          return;
+        }
+
+        bar.style.display = "flex";
+        tags.innerHTML = "";
+
+        if (hasCat) {
+          var catTag = document.createElement("span");
+          catTag.className = "active-tag";
+          catTag.innerHTML = 'Type: ' + escapeHtml(selectedCat) + ' <button type="button" class="active-tag-remove" title="Remove Type filter" aria-label="Remove Type filter">&times;</button>';
+          catTag.querySelector(".active-tag-remove").onclick = function (e) {
+            e.stopPropagation();
+            selectedCat = "ALL";
+            currentPage = 1;
+            rebuildChips();
+            applyFilters();
+          };
+          tags.appendChild(catTag);
+        }
+
+        if (hasLoc) {
+          var locTag = document.createElement("span");
+          locTag.className = "active-tag";
+          locTag.innerHTML = 'Location: ' + escapeHtml(selectedLoc) + ' <button type="button" class="active-tag-remove" title="Remove Location filter" aria-label="Remove Location filter">&times;</button>';
+          locTag.querySelector(".active-tag-remove").onclick = function (e) {
+            e.stopPropagation();
+            selectedLoc = "ALL";
+            currentPage = 1;
+            rebuildChips();
+            applyFilters();
+          };
+          tags.appendChild(locTag);
+        }
+
+        var clearBtn = document.getElementById("clear-all-filters-btn");
+        if (clearBtn) {
+          clearBtn.onclick = function () {
+            selectedCat = "ALL";
+            selectedLoc = "ALL";
+            currentPage = 1;
+            rebuildChips();
+            applyFilters();
+          };
+        }
+      }
+
+      function rebuildChips() {
+        // Save scroll position to prevent annoying horizontal jumps
+        var savedTypeScroll = typeChipsEl ? typeChipsEl.scrollLeft : 0;
+        var savedLocScroll = locChipsEl ? locChipsEl.scrollLeft : 0;
+
+        // Context-aware cross-filtering counts:
+        // 1. Category chips reflect the dataset filtered by selectedLoc (if any)
+        var catBaseTenders = (selectedLoc === "ALL")
+          ? allTenders
+          : allTenders.filter(function (t) { return t.__clean_loc === selectedLoc; });
+
+        var catCounts = {};
+        catBaseTenders.forEach(function (t) {
           catCounts[t.__clean_cat] = (catCounts[t.__clean_cat] || 0) + 1;
+        });
+
+        // Ensure active category is kept in list even if 0 in this slice
+        if (selectedCat !== "ALL" && !catCounts[selectedCat]) {
+          catCounts[selectedCat] = 0;
+        }
+
+        // 2. Location chips reflect the dataset filtered by selectedCat (if any)
+        var locBaseTenders = (selectedCat === "ALL")
+          ? allTenders
+          : allTenders.filter(function (t) { return t.__clean_cat === selectedCat; });
+
+        var locCounts = {};
+        locBaseTenders.forEach(function (t) {
           locCounts[t.__clean_loc] = (locCounts[t.__clean_loc] || 0) + 1;
         });
 
-        // Type Chips
+        // Ensure active location is kept in list even if 0 in this slice
+        if (selectedLoc !== "ALL" && !locCounts[selectedLoc]) {
+          locCounts[selectedLoc] = 0;
+        }
+
+        // Render Type Chips
         typeChipsEl.innerHTML = "";
         var allTypeBtn = document.createElement("button");
         allTypeBtn.type = "button";
         allTypeBtn.className = "filter-chip" + (selectedCat === "ALL" ? " active" : "");
-        allTypeBtn.textContent = "All Types (" + allTenders.length + ")";
+        allTypeBtn.innerHTML = 'All Types <span class="chip-count">(' + catBaseTenders.length + ')</span>';
         allTypeBtn.onclick = function () {
           selectedCat = "ALL";
           currentPage = 1;
@@ -806,11 +1028,16 @@
         };
         typeChipsEl.appendChild(allTypeBtn);
 
-        Object.keys(catCounts).sort(function (a, b) { return catCounts[b] - catCounts[a]; }).forEach(function (cat) {
+        Object.keys(catCounts).sort(function (a, b) {
+          if (a === selectedCat) return -1;
+          if (b === selectedCat) return 1;
+          return catCounts[b] - catCounts[a];
+        }).forEach(function (cat) {
           var btn = document.createElement("button");
           btn.type = "button";
-          btn.className = "filter-chip" + (selectedCat === cat ? " active" : "");
-          btn.textContent = cat + " (" + catCounts[cat] + ")";
+          var isActive = (selectedCat === cat);
+          btn.className = "filter-chip" + (isActive ? " active" : "");
+          btn.innerHTML = escapeHtml(cat) + ' <span class="chip-count">(' + (catCounts[cat] || 0) + ')</span>';
           btn.onclick = function () {
             selectedCat = (selectedCat === cat) ? "ALL" : cat;
             currentPage = 1;
@@ -820,12 +1047,12 @@
           typeChipsEl.appendChild(btn);
         });
 
-        // Location Chips
+        // Render Location Chips
         locChipsEl.innerHTML = "";
         var allLocBtn = document.createElement("button");
         allLocBtn.type = "button";
         allLocBtn.className = "filter-chip" + (selectedLoc === "ALL" ? " active" : "");
-        allLocBtn.textContent = "All Locations (" + allTenders.length + ")";
+        allLocBtn.innerHTML = 'All Locations <span class="chip-count">(' + locBaseTenders.length + ')</span>';
         allLocBtn.onclick = function () {
           selectedLoc = "ALL";
           currentPage = 1;
@@ -834,11 +1061,16 @@
         };
         locChipsEl.appendChild(allLocBtn);
 
-        Object.keys(locCounts).sort(function (a, b) { return locCounts[b] - locCounts[a]; }).forEach(function (loc) {
+        Object.keys(locCounts).sort(function (a, b) {
+          if (a === selectedLoc) return -1;
+          if (b === selectedLoc) return 1;
+          return locCounts[b] - locCounts[a];
+        }).forEach(function (loc) {
           var btn = document.createElement("button");
           btn.type = "button";
-          btn.className = "filter-chip" + (selectedLoc === loc ? " active" : "");
-          btn.textContent = loc + " (" + locCounts[loc] + ")";
+          var isActive = (selectedLoc === loc);
+          btn.className = "filter-chip" + (isActive ? " active" : "");
+          btn.innerHTML = escapeHtml(loc) + ' <span class="chip-count">(' + (locCounts[loc] || 0) + ')</span>';
           btn.onclick = function () {
             selectedLoc = (selectedLoc === loc) ? "ALL" : loc;
             currentPage = 1;
@@ -847,6 +1079,13 @@
           };
           locChipsEl.appendChild(btn);
         });
+
+        // Restore scroll positions so horizontal scrolling does not jump
+        typeChipsEl.scrollLeft = savedTypeScroll;
+        locChipsEl.scrollLeft = savedLocScroll;
+
+        // Update the Active Filters Bar
+        updateActiveFiltersBar();
       }
 
       function applyFilters() {
@@ -1011,15 +1250,42 @@
           empty.className = "empty-state";
           empty.innerHTML =
             "<p>No tenders match <strong>" + (selectedCat !== "ALL" ? escapeHtml(selectedCat) : "selected type") + "</strong> in <strong>" + (selectedLoc !== "ALL" ? escapeHtml(selectedLoc) : "selected location") + "</strong>.</p>" +
-            '<button type="button" class="reset-filter-btn" id="reset-btn">Reset Filters</button>';
+            '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px;">' +
+              (selectedLoc !== "ALL" ? '<button type="button" class="reset-filter-btn" id="clear-loc-btn">Clear Location (' + escapeHtml(selectedLoc) + ')</button>' : '') +
+              (selectedCat !== "ALL" ? '<button type="button" class="reset-filter-btn" id="clear-type-btn">Clear Type (' + escapeHtml(selectedCat) + ')</button>' : '') +
+              '<button type="button" class="page-btn" id="reset-both-btn">Reset All</button>' +
+            '</div>';
           tendersListEl.appendChild(empty);
-          document.getElementById("reset-btn").onclick = function () {
-            selectedCat = "ALL";
-            selectedLoc = "ALL";
-            currentPage = 1;
-            rebuildChips();
-            applyFilters();
-          };
+
+          var clLoc = document.getElementById("clear-loc-btn");
+          if (clLoc) {
+            clLoc.onclick = function () {
+              selectedLoc = "ALL";
+              currentPage = 1;
+              rebuildChips();
+              applyFilters();
+            };
+          }
+          var clType = document.getElementById("clear-type-btn");
+          if (clType) {
+            clType.onclick = function () {
+              selectedCat = "ALL";
+              currentPage = 1;
+              rebuildChips();
+              applyFilters();
+            };
+          }
+          var rstBoth = document.getElementById("reset-both-btn");
+          if (rstBoth) {
+            rstBoth.onclick = function () {
+              selectedCat = "ALL";
+              selectedLoc = "ALL";
+              currentPage = 1;
+              rebuildChips();
+              applyFilters();
+            };
+          }
+
           updatePagination(1, 0, 0, 0);
           return;
         }
@@ -1114,6 +1380,39 @@
           fetchTenders(q);
         };
       });
+
+      // Setup scroll arrow buttons and mouse wheel horizontal scrolling
+      function setupScrollControls() {
+        var btnTypeLeft = document.getElementById("scroll-type-left");
+        var btnTypeRight = document.getElementById("scroll-type-right");
+        var btnLocLeft = document.getElementById("scroll-loc-left");
+        var btnLocRight = document.getElementById("scroll-loc-right");
+
+        if (btnTypeLeft && typeChipsEl) {
+          btnTypeLeft.onclick = function () { typeChipsEl.scrollBy({ left: -220, behavior: "smooth" }); };
+        }
+        if (btnTypeRight && typeChipsEl) {
+          btnTypeRight.onclick = function () { typeChipsEl.scrollBy({ left: 220, behavior: "smooth" }); };
+        }
+        if (btnLocLeft && locChipsEl) {
+          btnLocLeft.onclick = function () { locChipsEl.scrollBy({ left: -220, behavior: "smooth" }); };
+        }
+        if (btnLocRight && locChipsEl) {
+          btnLocRight.onclick = function () { locChipsEl.scrollBy({ left: 220, behavior: "smooth" }); };
+        }
+
+        [typeChipsEl, locChipsEl].forEach(function (el) {
+          if (!el) return;
+          el.addEventListener("wheel", function (e) {
+            if (e.deltaY !== 0) {
+              e.preventDefault();
+              el.scrollLeft += (e.deltaY * 1.5);
+            }
+          }, { passive: false });
+        });
+      }
+
+      setupScrollControls();
 
       // Attach floating widget as well
       function attachFloatingWidget() {
