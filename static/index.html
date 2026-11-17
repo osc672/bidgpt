@@ -433,12 +433,6 @@
       <p class="lead">
         Crawl any government or corporate procurement portal once. Search verified active tenders with natural language, category filters, and direct links.
       </p>
-      <div style="margin-top: 24px;">
-        <a href="/search?site=sk_9ee55314081ef05c9043" style="display:inline-flex;align-items:center;gap:10px;padding:14px 30px;font-size:15px;font-weight:700;text-decoration:none;border-radius:12px;background:linear-gradient(135deg,#0f766e 0%,#0d9488 100%);color:#ffffff;box-shadow:0 8px 24px rgba(15,118,110,0.32);transition:all 0.2s ease;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-          <span>Search 99 Indexed Tenders &rarr;</span>
-        </a>
-      </div>
     </section>
 
     <div class="stats-grid">
@@ -655,14 +649,18 @@
             window.location.href = searchUrl;
           } else {
             connectMsg.style.color = "var(--danger)";
-            connectMsg.innerHTML = (data.detail || "Registration failed") + '. <br><a href="/search?site=sk_9ee55314081ef05c9043" style="color:var(--brand);font-weight:700;text-decoration:underline;">Click here to search 99 verified BidAssist tenders &rarr;</a>';
+            var detailMsg = data.detail || "Serverless demo runs in read-only mode";
+            if (detailMsg.indexOf("readonly") !== -1 || detailMsg.indexOf("read-only") !== -1) {
+              detailMsg = "Live Vercel deployment runs in read-only demo mode with pre-indexed portals. To crawl & index new portals in real time, run BidGPT locally/on a server or index via CLI (<code>python -m app.crawl &lt;url&gt;</code>).";
+            }
+            connectMsg.innerHTML = detailMsg + '<br><a href="/search?site=sk_9ee55314081ef05c9043" style="color:var(--brand);font-weight:700;text-decoration:underline;display:inline-block;margin-top:6px;">Search 1,076 verified BidAssist tenders &rarr;</a>';
           }
         })
         .catch(function (err) {
           btn.disabled = false;
           btn.textContent = "Start Crawl";
           connectMsg.style.color = "var(--danger)";
-          connectMsg.innerHTML = "Cannot crawl new site right now. <br><a href=\"/search?site=sk_9ee55314081ef05c9043\" style=\"color:var(--brand);font-weight:700;text-decoration:underline;\">Click here to search 99 verified BidAssist tenders &rarr;</a>";
+          connectMsg.innerHTML = 'Live Vercel deployment runs in read-only demo mode. To crawl & index new portals in real time, run BidGPT locally/on a server or index via CLI (<code>python -m app.crawl &lt;url&gt;</code>).<br><a href="/search?site=sk_9ee55314081ef05c9043" style="color:var(--brand);font-weight:700;text-decoration:underline;display:inline-block;margin-top:6px;">Search 1,076 verified BidAssist tenders &rarr;</a>';
         });
       };
     })();
